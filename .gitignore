@@ -1,4 +1,12 @@
-.DS_Store
+# Chat- und Session-Historie (nicht committen)
 .specstory/
 .cursor/
-node_modules/
+
+# System
+.DS_Store
+*.swp
+*~
+
+# Optional: Editor/IDE
+.idea/
+.vscode/
