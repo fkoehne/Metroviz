@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "title": "IT-Strategie 2020-2030",
+    "organization": "Stadtverwaltung Musterstadt"
+  },
+  "timeline": {
+    "start": "2020-Q1",
+    "end": "2030-Q4"
+  },
+  "zones": [
+    { "id": "office", "label": "Office-Anwendungen", "color": "#4A90D9" },
+    { "id": "groupware", "label": "Groupware & Kollaboration", "color": "#E67E22" },
+    { "id": "filecloud", "label": "Dateicloud", "color": "#27AE60" }
+  ],
+  "events": [
+    { "id": "ev-1", "label": "Wahlperiode Ende", "date": "2025-Q3" }
+  ],
+  "lines": [
+    {
+      "id": "ms-office",
+      "label": "Microsoft Office",
+      "color": "#0078D4",
+      "zone": "office",
+      "stations": [
+        { "id": "mso-2016", "label": "Office 2016", "date": "2020-Q1", "type": "existing" },
+        { "id": "mso-365", "label": "Office 365", "date": "2022-Q3", "type": "milestone" },
+        { "id": "mso-end", "label": "Abschaltung", "date": "2027-Q2", "type": "terminus", "transferTo": "libreoffice-start2" }
+      ]
+    },
+    {
+      "id": "libreoffice",
+      "label": "LibreOffice",
+      "color": "#18A303",
+      "zone": "office",
+      "stations": [
+        { "id": "lo-pilot", "label": "Pilotphase", "date": "2026-Q1", "type": "start" },
+        { "id": "libreoffice-start2", "label": "Vollmigration", "date": "2027-Q2", "type": "transfer", "transferFrom": "mso-end" },
+        { "id": "lo-stable", "label": "Regelbetrieb", "date": "2028-Q1", "type": "milestone" }
+      ]
+    },
+    {
+      "id": "exchange",
+      "label": "MS Exchange",
+      "color": "#D35400",
+      "zone": "groupware",
+      "stations": [
+        { "id": "ex-2019", "label": "Exchange 2019", "date": "2020-Q2", "type": "existing" },
+        { "id": "ex-end", "label": "End of Life", "date": "2025-Q4", "type": "terminus" }
+      ]
+    },
+    {
+      "id": "openxchange",
+      "label": "OpenXchange",
+      "color": "#F39C12",
+      "zone": "groupware",
+      "stations": [
+        { "id": "ox-start", "label": "Einführung", "date": "2025-Q1", "type": "start" },
+        { "id": "ox-mig", "label": "Migration", "date": "2025-Q4", "type": "transfer" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetroViz - Technologie-Roadmap</title>
+    <link rel="stylesheet" href="css/metroviz.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .controls button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 12px;
+            background: #2d2d2d;
+            color: #e0e0e0;
+            border: 1px solid #444;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            min-width: 58px;
+            height: 40px;
+        }
+        .controls button svg {
+            width: 14px;
+            height: 14px;
+            margin-bottom: 2px;
+            fill: currentColor;
+        }
+        .controls button:hover {
+            background: #3d3d3d;
+            border-color: #666;
+            color: #fff;
+        }
+        .controls select {
+            height: 40px;
+            padding: 0 32px 0 12px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e0e0e0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px top 50%;
+            background-size: 10px auto;
+            max-width: 220px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .controls select:hover, .controls select:focus {
+            border-color: #666;
+            background-color: #3d3d3d;
+        }
+        .view-switcher {
+            display: flex;
+            background: #1a1a1a;
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            margin: 0 20px;
+            gap: 4px;
+        }
+        .view-switcher button {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #888;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .view-switcher button:hover:not(.active) {
+            color: #e0e0e0;
+            background: #252525;
+        }
+        .view-switcher button.active {
+            background: #2d2d2d;
+            color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border: 1px solid #444;
+        }
+        .view-switcher button svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            padding: 4px;
+            margin-top: 4px;
+            min-width: 120px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .dropdown-menu a {
+            color: #e0e0e0;
+            text-decoration: none;
+            padding: 8px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+        .dropdown-menu a:hover {
+            background: #3d3d3d;
+            color: #fff;
+        }
+    </style>
+</head>
+    <body x-data="metrovizApp" 
+          @focus-station.window="activeTab = 'visual'; $nextTick(() => { const el = document.getElementById('editor-station-' + $event.detail.id); if(el) { el.scrollIntoView({behavior: 'smooth', block: 'center'}); el.style.transition = 'background-color 0.5s'; const oldBg = el.style.backgroundColor; el.style.backgroundColor = '#444'; setTimeout(() => el.style.backgroundColor = oldBg, 1000); } })"
+          @toggle-zone.window="const z = data.zones.find(zone => zone.id === $event.detail.id); if (z) { z.collapsed = !z.collapsed; }">
+    <header id="header">
+        <div style="display: flex; align-items: center;">
+            <svg width="28" height="28" viewBox="0 0 32 32" fill="none" style="margin-right: 12px; display: block;">
+                <!-- Orange Line (starts top, goes down) -->
+                <path d="M 4 12 L 12 12 L 20 20 L 28 20" stroke="#E67E22" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" />
+                
+                <!-- Blue Line (starts bottom, goes up, crosses over Orange) -->
+                <path d="M 4 20 L 12 20 L 20 12 L 28 12" stroke="#1a1a1a" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+                <path d="M 4 20 L 12 20 L 20 12 L 28 12" stroke="#0078D4" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" />
+                
+                <!-- Stations on the left -->
+                <circle cx="8" cy="12" r="3" fill="#1a1a1a" stroke="#E67E22" stroke-width="2"/>
+                <circle cx="8" cy="20" r="3" fill="#1a1a1a" stroke="#0078D4" stroke-width="2"/>
+                
+                <!-- Transfer Pill on the right -->
+                <line x1="24" y1="12" x2="24" y2="20" stroke="#e0e0e0" stroke-width="10" stroke-linecap="round" />
+                <line x1="24" y1="12" x2="24" y2="20" stroke="#1a1a1a" stroke-width="6" stroke-linecap="round" />
+                <circle cx="24" cy="12" r="2" fill="#e0e0e0" />
+                <circle cx="24" cy="20" r="2" fill="#e0e0e0" />
+            </svg>
+            <h1>MetroViz</h1>
+        </div>
+        
+        <div class="view-switcher">
+            <button :class="{'active': globalView === 'map'}" @click="globalView = 'map'" title="Metro-Map Ansicht">
+                <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+                Metro-Map
+            </button>
+            <button :class="{'active': globalView === 'markdown'}" @click="globalView = 'markdown'" title="Klassische Projekt-Ansicht">
+                <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+                Klassische Ansicht
+            </button>
+        </div>
+
+        <p id="subtitle" style="display:none;">Technologie-Roadmap</p>
+        <div class="controls">
+            <button @click="editorVisible = !editorVisible" title="Editor ein-/ausblenden">
+                <svg viewBox="0 0 24 24" x-show="editorVisible"><path d="M3 3h18v18H3V3zm12 2v14h4V5h-4zM5 5v14h8V5H5z"/></svg>
+                <svg viewBox="0 0 24 24" x-show="!editorVisible" style="display:none;"><path d="M3 3h18v18H3V3zm4 2v14h12V5H7z"/></svg>
+                <span x-text="editorVisible ? 'Verbergen' : 'Anzeigen'"></span>
+            </button>
+            <select x-model="currentFileName" @change="loadFile(currentFileName)">
+                <option value="">-- Ungespeichert --</option>
+                <template x-for="name in savedFiles" :key="name">
+                    <option :value="name" x-text="name"></option>
+                </template>
+            </select>
+            <button @click="saveFile()" title="Speichern">
+                <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+                <span>Speichern</span>
+            </button>
+            <button @click="saveAsNew()" title="Kopieren als...">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                <span>Kopieren</span>
+            </button>
+            <button @click="createNew()" title="Neue Roadmap">
+                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <span>Neu</span>
+            </button>
+            <button @click="resortAndClean()" title="Stationen sortieren & bereinigen">
+                <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+                <span>Aufräumen</span>
+            </button>
+            
+            <span style="border-left: 1px solid #444; height: 32px; margin: 0 5px;"></span>
+            
+            <input type="file" id="file-upload" accept=".json" style="display: none;" @change="handleFileUpload($event)">
+            <button onclick="document.getElementById('file-upload').click()" title="JSON Upload">
+                <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+                <span>Upload</span>
+            </button>
+            <div x-data="{ exportOpen: false }" style="position: relative;" @click.away="exportOpen = false">
+                <button @click="exportOpen = !exportOpen" title="Export Optionen">
+                    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    <span>Export</span>
+                </button>
+                <div class="dropdown-menu" x-show="exportOpen" style="display: none;">
+                    <a href="#" @click.prevent="exportSVG(); exportOpen = false">als SVG Map</a>
+                    <a href="#" @click.prevent="exportJSON(); exportOpen = false">als JSON</a>
+                    <a href="#" @click.prevent="exportMD(); exportOpen = false">als Markdown</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div id="editor-container" x-show="editorVisible">
+            <div class="editor-tabs">
+                <button :class="{'active': activeTab === 'visual'}" @click="activeTab = 'visual'">Visual Editor</button>
+                <button :class="{'active': activeTab === 'json'}" @click="activeTab = 'json'">JSON</button>
+            </div>
+            
+            <!-- JSON Editor Tab -->
+            <div class="tab-content" x-show="activeTab === 'json'">
+                <textarea id="json-editor" spellcheck="false" x-model="rawJson" @input="updateFromJson()"></textarea>
+                <div id="editor-error" :class="{'hidden': !jsonError}" x-text="jsonError"></div>
+            </div>
+
+            <!-- Visual Editor Tab -->
+            <div class="tab-content visual-editor" x-show="activeTab === 'visual'" style="display: none;">
+                
+                <div class="editor-section">
+                    <h3>Metadaten</h3>
+                    <div class="form-group">
+                        <label>Titel</label>
+                        <input type="text" x-model="data.meta.title">
+                    </div>
+                    <div class="form-group">
+                        <label>Organisation</label>
+                        <input type="text" x-model="data.meta.organization">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Start (z.B. 2020-Q1)</label>
+                            <input type="text" x-model="data.timeline.start">
+                        </div>
+                        <div class="form-group">
+                            <label>Ende (z.B. 2030-Q4)</label>
+                            <input type="text" x-model="data.timeline.end">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="editor-section">
+                    <div class="section-header">
+                        <h3>Events (Deadlines, Termine)</h3>
+                        <button class="btn-small" @click="addEvent()">+ Event</button>
+                    </div>
+                    <template x-for="(event, index) in data.events" :key="index">
+                        <div class="card">
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 2;">
+                                    <label>Label</label>
+                                    <input type="text" x-model="event.label">
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Datum</label>
+                                    <input type="text" x-model="event.date" placeholder="2025-Q1">
+                                </div>
+                                <div class="form-group" style="flex: 0; display:flex; align-items:flex-end;">
+                                    <button class="btn-icon btn-danger" @click="removeEvent(index)" title="Event Löschen">✕</button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="editor-section">
+                    <div class="section-header">
+                        <h3>Zonen (Themenbereiche)</h3>
+                        <button class="btn-small" @click="addZone()">+ Zone</button>
+                    </div>
+                    <template x-for="(zone, index) in data.zones" :key="index">
+                        <div class="card" x-data="{ collapsed: true }">
+                            <!-- Clickable Header -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" @click="collapsed = !collapsed">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div :style="`width: 12px; height: 12px; border-radius: 50%; background-color: ${zone.color}`"></div>
+                                    <strong x-text="zone.label || 'Neue Zone'" style="color: #e0e0e0; font-size: 13px;"></strong>
+                                </div>
+                                <div style="display: flex; gap: 4px; align-items: center;">
+                                    <button class="btn-icon" style="width: 24px; height: 24px; font-size: 12px;" @click.stop="moveZoneUp(index)" :disabled="index === 0" title="Nach oben">↑</button>
+                                    <button class="btn-icon" style="width: 24px; height: 24px; font-size: 12px;" @click.stop="moveZoneDown(index)" :disabled="index === data.zones.length - 1" title="Nach unten">↓</button>
+                                    <button class="btn-icon btn-danger" style="width: 24px; height: 24px; font-size: 10px;" @click.stop="removeZone(index)" title="Löschen">✕</button>
+                                    <span x-text="collapsed ? '▼' : '▲'" style="font-size: 10px; color: #888; margin-left: 8px; width: 12px; text-align: center;"></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Collapsible Content -->
+                            <div x-show="!collapsed" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #333;">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>ID</label>
+                                        <input type="text" x-model="zone.id">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Farbe</label>
+                                        <input type="color" x-model="zone.color">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Label</label>
+                                    <input type="text" x-model="zone.label" style="width: 100%;">
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="editor-section">
+                    <div class="section-header">
+                        <h3>Linien (Technologien)</h3>
+                        <button class="btn-small" @click="addLine()">+ Linie</button>
+                    </div>
+                    <template x-for="(line, lineIndex) in data.lines" :key="lineIndex">
+                        <div class="card line-card" :style="`border-left-color: ${line.color}`" x-data="{ collapsed: true }">
+                            <!-- Clickable Header -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" @click="collapsed = !collapsed">
+                                <strong x-text="line.label || 'Neue Linie'" style="color: #e0e0e0; font-size: 13px;"></strong>
+                                <div style="display: flex; gap: 4px; align-items: center;">
+                                    <button class="btn-icon btn-danger" style="width: 24px; height: 24px; font-size: 10px;" @click.stop="removeLine(lineIndex)" title="Linie Löschen">✕</button>
+                                    <span x-text="collapsed ? '▼' : '▲'" style="font-size: 10px; color: #888; margin-left: 8px; width: 12px; text-align: center;"></span>
+                                </div>
+                            </div>
+
+                            <!-- Collapsible Content -->
+                            <div x-show="!collapsed" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #333;">
+                                <div class="form-row">
+                                    <div class="form-group" style="flex: 2;">
+                                        <label>Name</label>
+                                        <input type="text" x-model="line.label">
+                                    </div>
+                                    <div class="form-group" style="flex: 1;">
+                                        <label>Farbe</label>
+                                        <input type="color" x-model="line.color">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group" style="flex: 1;">
+                                        <label>Zone</label>
+                                        <select x-model="line.zone">
+                                            <template x-for="z in data.zones">
+                                                <option :value="z.id" x-text="z.label" :selected="z.id === line.zone"></option>
+                                            </template>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Stationen -->
+                                <div class="stations-container">
+                                    <div class="section-header">
+                                        <h4>Stationen</h4>
+                                        <button class="btn-small" @click="addStation(line)">+ Station</button>
+                                    </div>
+                                    <template x-for="(station, stationIndex) in line.stations" :key="stationIndex">
+                                        <div class="card station-card" :id="'editor-station-' + station.id">
+                                            <div style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 8px;">
+                                                <input type="text" x-model="station.label" placeholder="Stationsname" style="flex-grow: 1;">
+                                                <button class="btn-icon btn-danger" @click="removeStation(line, stationIndex)">✕</button>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label>Datum</label>
+                                                    <input type="text" x-model="station.date" placeholder="2022-Q1">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Typ</label>
+                                                    <select x-model="station.type">
+                                                        <option value="existing">Bestehend</option>
+                                                        <option value="start">Start</option>
+                                                        <option value="milestone">Meilenstein</option>
+                                                        <option value="transfer">Transfer</option>
+                                                        <option value="terminus">Ende</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group" style="display: flex; align-items: center; gap: 8px; justify-content: center; padding-top: 15px;">
+                                                    <input type="checkbox" x-model="station.tint" :id="'tint-' + station.id" style="width: auto;">
+                                                    <label :for="'tint-' + station.id" style="margin: 0; cursor: pointer;">Linie verblassen</label>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Transfer Options -->
+                                            <template x-if="['transfer', 'terminus'].includes(station.type)">
+                                                <div class="form-group" style="margin-top: 8px;">
+                                                    <label>Transfer zu/von Station</label>
+                                                    <select x-model="station.transferTo" @change="if(!station.transferTo) delete station.transferTo">
+                                                        <option value="">-- Kein Transfer --</option>
+                                                        <template x-for="s in getAllStations(station.id)">
+                                                            <option :value="s.id" x-text="s.label + ' (' + s.lineLabel + ')'" :selected="s.id === station.transferTo"></option>
+                                                        </template>
+                                                    </select>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+            </div>
+        </div>
+        <div id="metroviz-container" x-show="globalView === 'map'"></div>
+        <div id="tooltip" class="tooltip hidden"></div>
+        
+        <div id="markdown-container" x-show="globalView === 'markdown'" style="display: none; flex-grow: 1; overflow-y: auto; padding: 2rem; background-color: #f5f5f5; color: #333; font-family: sans-serif;">
+            <div style="max-width: 900px; margin: 0 auto; background: white; padding: 3rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);" class="markdown-body" x-html="renderMarkdown()"></div>
+            <style>
+                .markdown-body h1 { border-bottom: 2px solid #eaeaea; padding-bottom: 0.3em; margin-top: 0; }
+                .markdown-body h2 { color: #0078D4; margin-top: 1.5em; border-bottom: 1px solid #eaeaea; padding-bottom: 0.2em; }
+                .markdown-body h3 { color: #444; margin-top: 1.2em; }
+                .markdown-body ul { line-height: 1.6; }
+                .markdown-body li { margin-bottom: 0.3em; }
+                .markdown-body strong { color: #111; }
+            </style>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module" src="js/app.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+</body>
+</html>
