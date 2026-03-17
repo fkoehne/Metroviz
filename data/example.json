@@ -1,62 +1,433 @@
 {
   "meta": {
-    "title": "IT-Strategie 2020-2030",
-    "organization": "Stadtverwaltung Musterstadt"
+    "title": "IT-Strategie 2026-2028",
+    "organization": "ZLB"
   },
   "timeline": {
-    "start": "2020-Q1",
-    "end": "2030-Q4"
+    "start": "2025-Q4",
+    "end": "2027-08-01"
   },
   "zones": [
-    { "id": "office", "label": "Office-Anwendungen", "color": "#4A90D9" },
-    { "id": "groupware", "label": "Groupware & Kollaboration", "color": "#E67E22" },
-    { "id": "filecloud", "label": "Dateicloud", "color": "#27AE60" }
-  ],
-  "events": [
-    { "id": "ev-1", "label": "Wahlperiode Ende", "date": "2025-Q3" }
+    {
+      "id": "exchange",
+      "label": "Exchange",
+      "color": "#bb1111",
+      "collapsed": false
+    },
+    {
+      "id": "groupware",
+      "label": "Groupware (Mail, Kalender, ...)",
+      "color": "#2354e7",
+      "collapsed": false
+    },
+    {
+      "id": "office",
+      "label": "Office-Anwendungen (Text, Tabellen, ...)",
+      "color": "#d9c14a",
+      "collapsed": false
+    },
+    {
+      "id": "filecloud",
+      "label": "Dateicloud",
+      "color": "#27AE60",
+      "collapsed": false
+    },
+    {
+      "id": "mobil",
+      "label": "Mobiles Arbeiten",
+      "color": "#6f3bb0",
+      "collapsed": false
+    }
   ],
   "lines": [
     {
       "id": "ms-office",
       "label": "Microsoft Office",
-      "color": "#0078D4",
+      "color": "#ffb005",
       "zone": "office",
       "stations": [
-        { "id": "mso-2016", "label": "Office 2016", "date": "2020-Q1", "type": "existing" },
-        { "id": "mso-365", "label": "Office 365", "date": "2022-Q3", "type": "milestone" },
-        { "id": "mso-end", "label": "Abschaltung", "date": "2027-Q2", "type": "terminus", "transferTo": "libreoffice-start2" }
+        {
+          "id": "mso-2016",
+          "label": "Office 2016",
+          "date": "2026-Q1",
+          "type": "existing",
+          "tint": false
+        },
+        {
+          "id": "mso-365",
+          "label": "Office 365",
+          "date": "2026-Q4",
+          "type": "transfer",
+          "tint": true
+        },
+        {
+          "id": "station-k1th66",
+          "label": "Power-User",
+          "date": "2027-Q3",
+          "type": "milestone"
+        }
       ]
     },
     {
       "id": "libreoffice",
-      "label": "LibreOffice",
+      "label": "LibreOffice (lokal)",
       "color": "#18A303",
       "zone": "office",
       "stations": [
-        { "id": "lo-pilot", "label": "Pilotphase", "date": "2026-Q1", "type": "start" },
-        { "id": "libreoffice-start2", "label": "Vollmigration", "date": "2027-Q2", "type": "transfer", "transferFrom": "mso-end" },
-        { "id": "lo-stable", "label": "Regelbetrieb", "date": "2028-Q1", "type": "milestone" }
+        {
+          "id": "lo-pilot",
+          "label": "Pilotphase",
+          "date": "2026-Q2",
+          "type": "start",
+          "tint": true
+        },
+        {
+          "id": "station-3cid66",
+          "label": "Evaluation",
+          "date": "2026-Q3",
+          "type": "milestone"
+        },
+        {
+          "id": "libreoffice-start2",
+          "label": "Teilmigration",
+          "date": "2026-Q4",
+          "type": "transfer",
+          "transferTo": "mso-365"
+        },
+        {
+          "id": "lo-stable",
+          "label": "Regelbetrieb",
+          "date": "2027-Q3",
+          "type": "milestone"
+        }
       ]
     },
     {
       "id": "exchange",
       "label": "MS Exchange",
-      "color": "#D35400",
-      "zone": "groupware",
+      "color": "#d10000",
+      "zone": "exchange",
       "stations": [
-        { "id": "ex-2019", "label": "Exchange 2019", "date": "2020-Q2", "type": "existing" },
-        { "id": "ex-end", "label": "End of Life", "date": "2025-Q4", "type": "terminus" }
+        {
+          "id": "ex-2019",
+          "label": "Exchange 2019",
+          "date": "2026-Q1",
+          "type": "existing"
+        },
+        {
+          "id": "station-3bzjir",
+          "label": "Ablösung",
+          "date": "2026-Q2",
+          "type": "transfer",
+          "transferTo": "station-vkkzgr",
+          "tint": true
+        },
+        {
+          "id": "station-0jj9f3",
+          "label": "End of Life",
+          "date": "2026-Q3",
+          "type": "terminus"
+        }
       ]
     },
     {
       "id": "openxchange",
-      "label": "OpenXchange",
-      "color": "#F39C12",
+      "label": "MS Outlook",
+      "color": "#4f59ee",
       "zone": "groupware",
       "stations": [
-        { "id": "ox-start", "label": "Einführung", "date": "2025-Q1", "type": "start" },
-        { "id": "ox-mig", "label": "Migration", "date": "2025-Q4", "type": "transfer" }
+        {
+          "id": "ox-start",
+          "label": "Outlook 2016",
+          "date": "2026-Q1",
+          "type": "existing"
+        },
+        {
+          "id": "ox-mig",
+          "label": "Outlook 365",
+          "date": "2026-Q4",
+          "type": "transfer",
+          "tint": true
+        },
+        {
+          "id": "station-w59lux",
+          "label": "Legacy-Systeme",
+          "date": "2027-Q3",
+          "type": "milestone"
+        }
       ]
+    },
+    {
+      "id": "line-ktu7gh",
+      "label": "Redexport",
+      "color": "#11a22e",
+      "zone": "filecloud",
+      "stations": [
+        {
+          "id": "station-hf5ife",
+          "label": "Windows Netzlaufwerk",
+          "date": "2026-Q1",
+          "type": "existing"
+        },
+        {
+          "id": "station-920u37",
+          "label": "Mapping Dateicloud",
+          "date": "2027-Q2",
+          "type": "milestone"
+        },
+        {
+          "id": "station-c59pys",
+          "label": "Regelbetrieb mit Sync Dateicloud",
+          "date": "2027-Q3",
+          "type": "milestone"
+        }
+      ]
+    },
+    {
+      "id": "line-lb6l4g",
+      "label": "Office 365 E3",
+      "color": "#d66800",
+      "zone": "exchange",
+      "stations": [
+        {
+          "id": "station-vkkzgr",
+          "label": "Lizensierung",
+          "date": "2026-Q2",
+          "type": "transfer"
+        },
+        {
+          "id": "station-vqf14w",
+          "label": "Ablösung",
+          "date": "2026-Q4",
+          "type": "transfer",
+          "tint": true
+        },
+        {
+          "id": "station-exfbt1",
+          "label": "Legacy Systeme",
+          "date": "2027-Q3",
+          "type": "existing",
+          "tint": true
+        }
+      ]
+    },
+    {
+      "id": "line-o0tq9e",
+      "label": "Open-Xchange",
+      "color": "#0da00f",
+      "zone": "exchange",
+      "stations": [
+        {
+          "id": "station-bzczvp",
+          "label": "Ausschreibung",
+          "date": "2026-Q2",
+          "type": "milestone",
+          "tint": true
+        },
+        {
+          "id": "station-z7ngmi",
+          "label": "Migration",
+          "date": "2026-Q4",
+          "type": "transfer",
+          "transferTo": "station-vqf14w"
+        },
+        {
+          "id": "station-gqiy56",
+          "label": "Regelbetrieb",
+          "date": "2027-Q3",
+          "type": "milestone"
+        }
+      ]
+    },
+    {
+      "id": "line-4q0pun",
+      "label": "Open Source Groupware (tba)",
+      "color": "#14a40a",
+      "zone": "groupware",
+      "stations": [
+        {
+          "id": "station-4gs4ap",
+          "label": "Marktsichtung",
+          "date": "2026-03-15",
+          "type": "start",
+          "tint": true
+        },
+        {
+          "id": "station-5zxrb2",
+          "label": "Ausschreibung",
+          "date": "2026-05-01",
+          "type": "milestone",
+          "tint": true
+        },
+        {
+          "id": "station-ocn5cb",
+          "label": "Migration",
+          "date": "2026-Q4",
+          "type": "transfer",
+          "transferTo": "ox-mig"
+        },
+        {
+          "id": "station-tnmbuw",
+          "label": "Regelbetrieb",
+          "date": "2027-Q3",
+          "type": "milestone"
+        }
+      ]
+    },
+    {
+      "id": "line-u7ii50",
+      "label": "Collabora Online (Web)",
+      "color": "#8f36b0",
+      "zone": "office",
+      "stations": [
+        {
+          "id": "station-nwwyjh",
+          "label": "Probe-Echtbetrieb VÖBB",
+          "date": "2026-Q2",
+          "type": "milestone",
+          "tint": true
+        },
+        {
+          "id": "station-m4kqby",
+          "label": "Start Regelbetrieb",
+          "date": "2027-Q1",
+          "type": "milestone"
+        },
+        {
+          "id": "station-ic3s6j",
+          "label": "Regelbetrieb",
+          "date": "2027-Q3",
+          "type": "milestone"
+        }
+      ]
+    },
+    {
+      "id": "line-6ny7zp",
+      "label": "VÖBB Dateicloud (OpenCloud)",
+      "color": "#b313be",
+      "zone": "filecloud",
+      "stations": [
+        {
+          "id": "station-8r1mki",
+          "label": "Probe-Echtbetrieb",
+          "date": "2026-Q2",
+          "type": "milestone",
+          "tint": true
+        },
+        {
+          "id": "station-5628wy",
+          "label": "Zwischenbericht",
+          "date": "2026-11-15",
+          "type": "transfer",
+          "transferTo": "station-2e7qc0",
+          "tint": true
+        },
+        {
+          "id": "station-z7y2t4",
+          "label": "Start Regelbetrieb",
+          "date": "2027-Q1",
+          "type": "milestone"
+        },
+        {
+          "id": "station-c03xi8",
+          "label": "Regelbetrieb",
+          "date": "2027-Q3",
+          "type": "milestone"
+        }
+      ]
+    },
+    {
+      "id": "line-bckkol",
+      "label": "ZLB Dateicloud (tba)",
+      "color": "#00b8b5",
+      "zone": "filecloud",
+      "stations": [
+        {
+          "id": "station-2e7qc0",
+          "label": "Evaluation",
+          "date": "2026-11-15",
+          "type": "transfer",
+          "tint": true
+        },
+        {
+          "id": "station-mewbu8",
+          "label": "Ausschreibung",
+          "date": "2027-01-15",
+          "type": "milestone",
+          "tint": true
+        },
+        {
+          "id": "station-gond02",
+          "label": "Start Regelbetrieb",
+          "date": "2027-Q2",
+          "type": "transfer"
+        },
+        {
+          "id": "station-e4cxkk",
+          "label": "Regelbetrieb",
+          "date": "2027-Q3",
+          "type": "milestone"
+        }
+      ]
+    },
+    {
+      "id": "line-o2t3ua",
+      "label": "VPN",
+      "color": "#e265ae",
+      "zone": "mobil",
+      "stations": [
+        {
+          "id": "station-89p2qc",
+          "label": "VPN (ITDZ)",
+          "date": "2026-Q1",
+          "type": "existing"
+        },
+        {
+          "id": "station-1nswbg",
+          "label": "VPN (ZLB)",
+          "date": "2027-Q1",
+          "type": "milestone"
+        },
+        {
+          "id": "station-n8cb4b",
+          "label": "Regelbetrieb",
+          "date": "2027-Q3",
+          "type": "milestone"
+        }
+      ]
+    },
+    {
+      "id": "line-vo5j0x",
+      "label": "Remote Desktop",
+      "color": "#71367d",
+      "zone": "mobil",
+      "stations": [
+        {
+          "id": "station-6xnlhe",
+          "label": "RDP-Client",
+          "date": "2026-Q1",
+          "type": "existing"
+        },
+        {
+          "id": "station-f3bisn",
+          "label": "Abschaltung",
+          "date": "2027-Q2",
+          "type": "terminus",
+          "transferTo": "station-gond02"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "event-mpmnuz",
+      "label": "Auslaufen Lizenzen Exchange",
+      "date": "2026-04-15"
+    },
+    {
+      "id": "event-6goc80",
+      "label": "Auslaufen Office Lizenzen",
+      "date": "2026-Q4"
     }
   ]
 }
