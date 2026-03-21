@@ -133,11 +133,154 @@
             background: #3d3d3d;
             color: #fff;
         }
+        [x-cloak] { display: none !important; }
+        .app-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .app-modal-backdrop--above {
+            z-index: 2100;
+        }
+        .app-modal {
+            background: #2d2d2d;
+            border: 1px solid #555;
+            border-radius: 10px;
+            max-width: 520px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 1.25rem 1.5rem;
+            color: #e0e0e0;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+        }
+        .app-modal h2 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+        .app-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .app-modal-close {
+            background: transparent;
+            border: none;
+            color: #aaa;
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0 0.25rem;
+        }
+        .app-modal-close:hover { color: #fff; }
+        .app-modal-message {
+            margin: 0 0 1.25rem;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #ccc;
+            white-space: pre-wrap;
+        }
+        .app-modal-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 10px;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            border: 1px solid #555;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            font-size: 13px;
+        }
+        .app-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .app-modal-actions button {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid #555;
+            background: #3d3d3d;
+            color: #e0e0e0;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .app-modal-actions button:hover {
+            background: #4a4a4a;
+            border-color: #666;
+        }
+        .app-modal-actions button.app-modal-btn-primary {
+            background: #0078D4;
+            border-color: #0078D4;
+            color: #fff;
+        }
+        .app-modal-actions button.app-modal-btn-primary:hover {
+            background: #1084d8;
+            border-color: #1084d8;
+        }
+        .import-dropzone {
+            border: 2px dashed #666;
+            border-radius: 8px;
+            padding: 2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 1.25rem;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .import-dropzone.import-dropzone-active {
+            border-color: #0078D4;
+            background: #333;
+        }
+        .import-dropzone p { margin: 0; font-size: 13px; color: #bbb; }
+        .import-url-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 0.75rem;
+        }
+        .import-url-row input[type="url"] {
+            flex: 1;
+            min-width: 0;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #555;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            font-size: 13px;
+        }
+        .import-url-row button {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid #555;
+            background: #3d3d3d;
+            color: #e0e0e0;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .import-url-row button:hover {
+            background: #4a4a4a;
+            border-color: #666;
+        }
+        .import-cors-help {
+            font-size: 12px;
+            color: #999;
+            line-height: 1.55;
+            margin: 0;
+        }
     </style>
 </head>
     <body x-data="metrovizApp" 
           @focus-station.window="focusStation($event.detail.id)"
-          @toggle-zone.window="const z = data.zones.find(zone => zone.id === $event.detail.id); if (z) { z.collapsed = !z.collapsed; }">
+          @toggle-zone.window="const z = data.zones.find(zone => zone.id === $event.detail.id); if (z) { z.collapsed = !z.collapsed; }"
+          @keydown.escape.window="onEscapeModal()">
     <header id="header">
         <div style="display: flex; align-items: center;">
             <svg width="28" height="28" viewBox="0 0 32 32" fill="none" style="margin-right: 12px; display: block;">
@@ -209,10 +352,9 @@
             
             <span style="border-left: 1px solid #444; height: 32px; margin: 0 5px;"></span>
             
-            <input type="file" id="file-upload" accept=".json" style="display: none;" @change="handleFileUpload($event)">
-            <button onclick="document.getElementById('file-upload').click()" title="JSON Upload">
+            <button @click="importModalOpen = true" title="Import JSON">
                 <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
-                <span>Upload</span>
+                <span>Import</span>
             </button>
             <button @click="generateShareLink()" title="Link teilen (in Zwischenablage)">
                 <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
@@ -231,6 +373,48 @@
             </div>
         </div>
     </header>
+
+    <div class="app-modal-backdrop app-modal-backdrop--above" x-show="dialogOpen" x-cloak @click.self="dialogDismiss()">
+        <div class="app-modal" role="dialog" aria-labelledby="app-dialog-title" @click.stop>
+            <div class="app-modal-header">
+                <h2 id="app-dialog-title" x-text="dialogTitle"></h2>
+                <button type="button" class="app-modal-close" @click="dialogDismiss()" aria-label="Schließen">&times;</button>
+            </div>
+            <p class="app-modal-message" x-text="dialogMessage"></p>
+            <input type="text" id="dialog-prompt-input" class="app-modal-input" x-show="dialogMode === 'prompt'" x-model="dialogInput" @keydown.enter.prevent="dialogConfirmOk()">
+            <div class="app-modal-actions">
+                <button type="button" x-show="dialogMode === 'confirm' || dialogMode === 'prompt'" @click="dialogDismiss()">Abbrechen</button>
+                <button type="button" id="dialog-ok-btn" class="app-modal-btn-primary" @click="dialogConfirmOk()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-modal-backdrop" x-show="importModalOpen" x-cloak @click.self="importModalOpen = false">
+        <div class="app-modal" role="dialog" aria-labelledby="import-modal-title" @click.stop>
+            <div class="app-modal-header">
+                <h2 id="import-modal-title">Import</h2>
+                <button type="button" class="app-modal-close" @click="importModalOpen = false" aria-label="Schließen">&times;</button>
+            </div>
+            <input type="file" id="import-file-input" accept=".json,application/json" style="display: none;" @change="handleImportFileInput($event)">
+            <div
+                class="import-dropzone"
+                :class="{ 'import-dropzone-active': importDropActive }"
+                @click="document.getElementById('import-file-input').click()"
+                @dragover.prevent="importDropActive = true; $event.dataTransfer.dropEffect = 'copy'"
+                @dragleave="if (!$event.relatedTarget || !$event.currentTarget.contains($event.relatedTarget)) importDropActive = false"
+                @drop="importDropHandler($event)"
+            >
+                <p><strong>Drop a JSON file here</strong> or click to choose a file.</p>
+            </div>
+            <p style="margin: 0 0 0.35rem; font-size: 13px; color: #ccc;">Or load from URL</p>
+            <div class="import-url-row">
+                <input type="url" x-model="importUrl" placeholder="https://example.com/roadmap.json" @keydown.enter.prevent="importFromUrl()">
+                <button type="button" @click="importFromUrl()">Load</button>
+            </div>
+            <p class="import-cors-help">Your browser will only allow MetroViz to read JSON from another site if that server sends appropriate <strong>CORS</strong> headers (for example <code style="color:#ccc;">Access-Control-Allow-Origin</code>) that include this app’s origin. Hosting you control (e.g. GitHub Pages, raw files on the same domain, object storage with CORS rules) can work; many generic “paste” or file hosts block cross-origin requests, so the load may fail with a network error. If that happens, download the file and use the dropzone above, or host the JSON where you can set CORS.</p>
+        </div>
+    </div>
+
     <main>
         <div id="editor-container" x-show="editorVisible">
             <div class="editor-tabs">

@@ -22,6 +22,15 @@ class App {
                 jsonError: '',
                 savedFiles: [],
                 currentFileName: '',
+                importModalOpen: false,
+                importUrl: '',
+                importDropActive: false,
+                dialogOpen: false,
+                dialogMode: 'alert',
+                dialogTitle: '',
+                dialogMessage: '',
+                dialogInput: '',
+                _dialogResolve: null,
                 data: {
                     meta: { title: '', organization: '' },
                     timeline: { start: '', end: '' },
@@ -74,6 +83,75 @@ class App {
                         if (tab === 'json') {
                             this.rawJson = JSON.stringify(this.data, null, 2);
                         }
+                    });
+
+                    this.$watch('dialogOpen', (open) => {
+                        if (!open) return;
+                        this.$nextTick(() => {
+                            if (this.dialogMode === 'prompt') {
+                                document.getElementById('dialog-prompt-input')?.focus();
+                            } else {
+                                document.getElementById('dialog-ok-btn')?.focus();
+                            }
+                        });
+                    });
+                },
+
+                onEscapeModal() {
+                    if (this.dialogOpen) this.dialogDismiss();
+                    else if (this.importModalOpen) this.importModalOpen = false;
+                },
+
+                dialogConfirmOk() {
+                    const r = this._dialogResolve;
+                    this._dialogResolve = null;
+                    this.dialogOpen = false;
+                    if (!r) return;
+                    if (this.dialogMode === 'alert') r();
+                    else if (this.dialogMode === 'confirm') r(true);
+                    else if (this.dialogMode === 'prompt') r(this.dialogInput);
+                },
+
+                dialogDismiss() {
+                    const r = this._dialogResolve;
+                    this._dialogResolve = null;
+                    this.dialogOpen = false;
+                    if (!r) return;
+                    if (this.dialogMode === 'alert') r();
+                    else if (this.dialogMode === 'confirm') r(false);
+                    else if (this.dialogMode === 'prompt') r(null);
+                },
+
+                dialogAlert(message, title = 'Hinweis') {
+                    return new Promise((resolve) => {
+                        this.dialogMode = 'alert';
+                        this.dialogTitle = title;
+                        this.dialogMessage = message;
+                        this.dialogInput = '';
+                        this._dialogResolve = resolve;
+                        this.dialogOpen = true;
+                    });
+                },
+
+                dialogConfirm(message, title = 'Bestätigen') {
+                    return new Promise((resolve) => {
+                        this.dialogMode = 'confirm';
+                        this.dialogTitle = title;
+                        this.dialogMessage = message;
+                        this.dialogInput = '';
+                        this._dialogResolve = resolve;
+                        this.dialogOpen = true;
+                    });
+                },
+
+                dialogPrompt(message, defaultValue = '', title = 'Eingabe') {
+                    return new Promise((resolve) => {
+                        this.dialogMode = 'prompt';
+                        this.dialogTitle = title;
+                        this.dialogMessage = message;
+                        this.dialogInput = defaultValue;
+                        this._dialogResolve = resolve;
+                        this.dialogOpen = true;
                     });
                 },
 
@@ -141,22 +219,23 @@ class App {
                     window.history.replaceState({}, '', url);
                 },
 
-                generateShareLink() {
+                async generateShareLink() {
                     if (typeof window.LZString === 'undefined') {
-                        alert('Kompression nicht verfügbar.');
+                        await this.dialogAlert('Kompression nicht verfügbar.', 'Teilen');
                         return;
                     }
                     if (!this.rawJson || !this.rawJson.trim()) {
-                        alert('Keine JSON-Daten vorhanden.');
+                        await this.dialogAlert('Keine JSON-Daten vorhanden.', 'Teilen');
                         return;
                     }
                     const compressed = window.LZString.compressToEncodedURIComponent(this.rawJson);
                     const shareUrl = window.location.origin + window.location.pathname + '?data=' + compressed;
-                    navigator.clipboard.writeText(shareUrl).then(() => {
-                        alert('Link kopiert');
-                    }).catch(() => {
-                        alert('Kopieren fehlgeschlagen');
-                    });
+                    try {
+                        await navigator.clipboard.writeText(shareUrl);
+                        await this.dialogAlert('Link kopiert', 'Teilen');
+                    } catch {
+                        await this.dialogAlert('Kopieren fehlgeschlagen', 'Teilen');
+                    }
                 },
 
                 async loadFromRemoteSource(url) {
@@ -181,7 +260,7 @@ class App {
                     localStorage.setItem('metroviz_index', JSON.stringify(this.savedFiles));
                 },
 
-                loadFile(name) {
+                async loadFile(name) {
                     if (!name) return;
                     try {
                         const dataStr = localStorage.getItem('metroviz_file_' + name);
@@ -190,31 +269,41 @@ class App {
                             this.updateFromJson();
                             this.currentFileName = name;
                         }
-                    } catch(e) {
-                        alert("Fehler beim Laden: " + e.message);
+                    } catch (e) {
+                        await this.dialogAlert('Fehler beim Laden: ' + e.message, 'Fehler');
                     }
                 },
 
-                saveFile() {
+                async saveFile() {
                     if (!this.currentFileName) {
-                        return this.saveAsNew();
+                        return await this.saveAsNew();
                     }
                     this.rawJson = JSON.stringify(this.data, null, 2);
                     localStorage.setItem('metroviz_file_' + this.currentFileName, this.rawJson);
-                    alert(`"${this.currentFileName}" erfolgreich gespeichert.`);
+                    await this.dialogAlert('"' + this.currentFileName + '" erfolgreich gespeichert.', 'Gespeichert');
                 },
 
-                saveAsNew() {
-                    const name = prompt("Bitte einen Namen für die neue Roadmap eingeben:", "Meine Roadmap");
-                    if (!name) return;
-                    if (this.savedFiles.includes(name)) {
-                        if (!confirm("Eine Datei mit diesem Namen existiert bereits. Überschreiben?")) return;
+                async saveAsNew() {
+                    const name = await this.dialogPrompt(
+                        'Bitte einen Namen für die neue Roadmap eingeben:',
+                        'Meine Roadmap',
+                        'Neue Roadmap'
+                    );
+                    if (name === null) return;
+                    const trimmed = (name || '').trim();
+                    if (!trimmed) return;
+                    if (this.savedFiles.includes(trimmed)) {
+                        const ok = await this.dialogConfirm(
+                            'Eine Datei mit diesem Namen existiert bereits. Überschreiben?',
+                            'Überschreiben?'
+                        );
+                        if (!ok) return;
                     } else {
-                        this.savedFiles.push(name);
+                        this.savedFiles.push(trimmed);
                         this.saveIndex();
                     }
-                    this.currentFileName = name;
-                    this.saveFile();
+                    this.currentFileName = trimmed;
+                    await this.saveFile();
                 },
 
                 createNew() {
@@ -231,17 +320,39 @@ class App {
                     this.renderMap(this.data);
                 },
 
-                handleFileUpload(event) {
-                    const file = event.target.files[0];
+                importJsonFromFile(file) {
                     if (!file) return;
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         this.rawJson = e.target.result;
                         this.updateFromJson();
-                        this.currentFileName = ''; 
+                        this.currentFileName = '';
+                        this.importModalOpen = false;
                     };
                     reader.readAsText(file);
-                    event.target.value = ''; // reset input
+                },
+
+                handleImportFileInput(event) {
+                    const file = event.target.files[0];
+                    if (file) this.importJsonFromFile(file);
+                    event.target.value = '';
+                },
+
+                importDropHandler(event) {
+                    event.preventDefault();
+                    this.importDropActive = false;
+                    const file = event.dataTransfer.files[0];
+                    if (file) this.importJsonFromFile(file);
+                },
+
+                async importFromUrl() {
+                    const url = this.importUrl.trim();
+                    if (!url) return;
+                    const ok = await this.loadFromRemoteSource(url);
+                    if (ok) {
+                        this.importModalOpen = false;
+                        this.importUrl = '';
+                    }
                 },
 
                 exportSVG() {
