@@ -49,19 +49,21 @@
                 <span x-text="$store.i18n.t('header.edit')">Edit</span>
             </button>
 
-            <select x-model="currentFileName" @change="loadFile(currentFileName)" class="file-select">
-                <option value="" x-text="$store.i18n.t('header.unsaved')">-- Ungespeichert --</option>
-                <template x-for="name in savedFiles" :key="name">
-                    <option :value="name" x-text="name"></option>
-                </template>
-            </select>
-
             <div class="action-menu-wrapper" x-data="{ mobileMenuOpen: false }" @click.away="mobileMenuOpen = false">
                 <button class="burger-btn" @click="mobileMenuOpen = !mobileMenuOpen" title="Menü">
                     <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
                 </button>
 
                 <div class="action-buttons-inner controls" :class="{ 'mobile-open': mobileMenuOpen }" @click="mobileMenuOpen = false">
+                    <select x-model="currentFileName" @change="loadFile(currentFileName)" class="file-select" @click.stop>
+                        <option value="" x-text="$store.i18n.t('header.unsaved')">-- Ungespeichert --</option>
+                        <template x-for="name in savedFiles" :key="name">
+                            <option :value="name" x-text="name"></option>
+                        </template>
+                    </select>
+
+                    <span class="header-divider desktop-only"></span>
+
                     <button @click.stop="saveFile()" :title="$store.i18n.t('header.saveTitle')">
                         <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
                         <span x-text="$store.i18n.t('header.save')">Speichern</span>
@@ -102,20 +104,21 @@
                             <a href="#" @click.prevent="exportMD(); exportOpen = false" x-text="$store.i18n.t('header.exportMd')">als Markdown</a>
                         </div>
                     </div>
+
+                    <span class="header-divider desktop-only"></span>
+
+                    <select 
+                        x-data 
+                        class="lang-select"
+                        :value="$store.i18n.locale.split('-')[0]" 
+                        @change="$store.i18n.changeLanguage($event.target.value)"
+                        @click.stop
+                        title="Sprache / Language">
+                        <option value="de">DE</option>
+                        <option value="en">EN</option>
+                    </select>
                 </div>
             </div>
-
-            <span class="header-divider"></span>
-
-            <select 
-                x-data 
-                :value="$store.i18n.locale.split('-')[0]" 
-                @change="$store.i18n.changeLanguage($event.target.value)"
-                title="Sprache / Language"
-                style="width: 55px; min-width: 55px; padding: 0 18px 0 8px; background-position: right 6px top 50%;">
-                <option value="de">DE</option>
-                <option value="en">EN</option>
-            </select>
         </div>
     </header>
 

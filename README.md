@@ -16,6 +16,8 @@ You can **create and edit your own roadmaps right in the browser** using the pub
 
 There is **no need to clone the repository, run a local web server, or install any dependencies**. Open the link, use the editor (visual or JSON tab), save to your browser’s local storage, export as JSON/Markdown/images, or share a compressed link—all client-side. Running MetroViz locally is optional and only needed if you want to hack on the source code or work fully offline.
 
+**Save** keeps data in **local storage on that device/browser only** (nothing is uploaded). **Share** copies a URL that **embeds your entire roadmap** (compressed JSON), not just a link to the app; open it elsewhere to restore the same map. To use the same data on another computer, either **Share** the URL to yourself (email, notes, chat) or **export JSON** and import it there.
+
 ## 🌟 Key Features
 
 * **Visual Metro Map Rendering:** Automatically routes lines and avoids label collisions using D3.js.
@@ -28,9 +30,19 @@ There is **no need to clone the repository, run a local web server, or install a
 * **Export Capabilities:** 
   * **Images & Documents:** High-res PNG, scalable SVG, and PDF exports.
   * **Data:** JSON (for backups/imports) and Markdown (for documentation).
-* **Local Storage & Privacy First:** All data is saved directly in your browser's `localStorage`. No backend database is required.
-* **Shareable URLs:** The entire roadmap state (including UI layout choices like collapsed zones) is compressed (via LZ-String) directly into a shareable URL.
+* **Local Storage & Privacy First:** All data is saved directly in your browser's `localStorage`. No backend database is required. Saved files do **not** sync to other devices; use Share or JSON export for that.
+* **Shareable URLs:** **Share** puts the **full roadmap payload** (all JSON, compressed with LZ-String) **into the URL**, together with extras such as collapsed-zone state and language—not merely a shortcut to MetroViz. The URL can be long; treat it like sensitive data if your roadmap is confidential.
 * **Localization (i18n):** Full support for multiple languages (currently German and English). Language state is preserved in the URL (`?lang=en`).
+
+---
+
+## 💾 Save vs. Share (and other devices)
+
+| Action | What it does |
+|--------|----------------|
+| **Save** | Stores the roadmap under a name in **this browser’s local storage** only. Other browsers, profiles, or computers do **not** see it automatically. |
+| **Share** | Copies a **single URL** that **contains your roadmap data** (compressed). Paste it elsewhere or send it to yourself to open the **same** map on another device. The link also carries UI state (e.g. collapsed zones) and language when generated. |
+| **Export JSON** | Downloads a normal `.json` file you can move manually and **Import** on another machine—useful when URLs are too long or you prefer a file workflow. |
 
 ---
 

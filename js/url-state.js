@@ -100,11 +100,11 @@ export const urlStateActions = {
      */
     async generateShareLink() {
         if (typeof window.LZString === 'undefined') {
-            await this.dialogAlert('Kompression nicht verfügbar.', 'Teilen');
+            await this.dialogAlert(i18next.t('js.shareUnavailable'), i18next.t('header.share'));
             return;
         }
         if (!this.rawJson || !this.rawJson.trim()) {
-            await this.dialogAlert('Keine JSON-Daten vorhanden.', 'Teilen');
+            await this.dialogAlert(i18next.t('js.shareNoData'), i18next.t('header.share'));
             return;
         }
         // Serialize the current state including zstate
@@ -117,9 +117,9 @@ export const urlStateActions = {
         const shareUrl = window.location.origin + window.location.pathname + '?zstate=' + zstate + langStr + '&data=' + compressed;
         try {
             await navigator.clipboard.writeText(shareUrl);
-            await this.dialogAlert('Link kopiert', 'Teilen');
+            await this.dialogAlert(i18next.t('js.shareLinkCopied'), i18next.t('header.share'));
         } catch {
-            await this.dialogAlert('Kopieren fehlgeschlagen', 'Teilen');
+            await this.dialogAlert(i18next.t('js.shareCopyFailed'), i18next.t('header.share'));
         }
     }
 };

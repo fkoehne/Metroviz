@@ -24,6 +24,9 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 0.5rem;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 header h1 {
@@ -586,6 +589,13 @@ input[type="text"]:focus, select:focus {
     white-space: nowrap;
     overflow: hidden;
 }
+.controls .lang-select {
+    width: 55px;
+    min-width: 55px;
+    max-width: 55px;
+    padding: 0 18px 0 8px;
+    background-position: right 6px top 50%;
+}
 .controls select:hover, .controls select:focus {
     border-color: #666;
     background-color: #3d3d3d;
@@ -817,9 +827,10 @@ input[type="text"]:focus, select:focus {
 .flex-center { display: flex; align-items: center; }
 .logo-icon { margin-right: 6px; display: block; }
 .header-actions { display: flex; align-items: center; justify-content: space-between; flex-grow: 1; margin: 0 0 0 20px; }
-.header-left { display: flex; align-items: center; }
-.header-center { display: flex; justify-content: center; flex: 1; margin: 0 10px; }
-.header-right { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.header-left { display: flex; align-items: center; flex-shrink: 0; }
+.header-center { display: flex; justify-content: center; flex: 1 1 0%; margin: 0 6px; min-width: 0; }
+.header-right { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+.action-menu-wrapper { position: relative; flex-shrink: 0; }
 .btn-active { background: #3d3d3d !important; border-color: #666 !important; color: #fff !important; }
 .d-none { display: none; }
 .m-0 { margin: 0; }
@@ -864,16 +875,49 @@ input[type="text"]:focus, select:focus {
     display: block;
 }
 
-@media (max-width: 1080px) {
-    .action-buttons-inner {
+/* Schmale Viewports und Touch-Geräte: gleiches Menü (iOS/Desktop-Simulation weicht ab) */
+@media (max-width: 1080px), (hover: none) and (pointer: coarse) {
+    .action-buttons-inner:not(.mobile-open) {
         display: none !important;
+        visibility: hidden !important;
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        clip-path: inset(50%) !important;
+        pointer-events: none !important;
+        opacity: 0 !important;
+        border: none !important;
+    }
+
+    /* WebKit: native Controls können trotz verstecktem Container sichtbar bleiben */
+    .action-buttons-inner:not(.mobile-open) select,
+    .action-buttons-inner:not(.mobile-open) button,
+    .action-buttons-inner:not(.mobile-open) .export-dropdown-container,
+    .action-buttons-inner:not(.mobile-open) .header-divider {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
     }
     
     .action-buttons-inner.mobile-open {
         display: flex !important;
+        visibility: visible !important;
         position: absolute;
         top: 60px;
         right: 20px;
+        left: auto;
+        width: min(320px, calc(100vw - 24px));
+        max-width: min(320px, calc(100vw - 24px));
+        height: auto !important;
+        max-height: min(85vh, calc(100vh - 72px));
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        clip-path: none !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
         background: #2d2d2d;
         flex-direction: column;
         padding: 10px;
@@ -882,10 +926,37 @@ input[type="text"]:focus, select:focus {
         box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         z-index: 2000;
         align-items: stretch;
+        box-sizing: border-box;
+    }
+
+    .action-buttons-inner.mobile-open select {
+        display: block !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+
+    .action-buttons-inner.mobile-open button {
+        display: flex !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+    }
+
+    .action-buttons-inner.mobile-open .export-dropdown-container {
+        display: block !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
     }
 
     .burger-btn {
         display: flex !important;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
+        padding: 0;
+        box-sizing: border-box;
     }
     
     .desktop-only {
@@ -904,6 +975,12 @@ input[type="text"]:focus, select:focus {
         margin-right: 8px;
     }
     
+    .action-buttons-inner select,
+    .controls .action-buttons-inner .lang-select {
+        width: 100%;
+        max-width: none;
+    }
+    
     .export-dropdown-container {
         width: 100%;
     }
@@ -911,9 +988,27 @@ input[type="text"]:focus, select:focus {
     .export-dropdown-container > button {
         width: 100%;
     }
+
+    .view-switcher {
+        margin: 0 2px;
+        gap: 1px;
+        flex-shrink: 1;
+        min-width: 0;
+    }
+    .view-switcher button {
+        min-width: 44px;
+        padding: 4px 6px;
+        flex: 1 1 0;
+    }
+    .view-switcher button span {
+        display: none;
+    }
 }
 
 @media (max-width: 768px) {
+    header {
+        padding: 0.5rem 0.65rem;
+    }
     header h1 {
         display: none;
     }
