@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "title": "Neue Roadmap 2",
+    "organization": ""
+  },
+  "timeline": {
+    "start": "2026-Q1",
+    "end": "2027-Q4"
+  },
+  "events": [],
+  "zones": [
+    {
+      "id": "zone-7aits7",
+      "label": "Neue Zone",
+      "color": "#6CBE45",
+      "collapsed": false
+    }
+  ],
+  "lines": [
+    {
+      "id": "line-oo93kv",
+      "label": "Neue Linie",
+      "color": "#0078D4",
+      "zone": "",
+      "stations": [
+        {
+          "id": "station-q62e43",
+          "label": "Test",
+          "date": "2020-Q1",
+          "type": "milestone"
+        },
+        {
+          "id": "station-divh1o",
+          "label": "Neue Station 2",
+          "date": "2026-Q1",
+          "type": "milestone"
+        }
+      ]
+    }
+  ]
+}

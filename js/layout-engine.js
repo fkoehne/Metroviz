@@ -1,3 +1,7 @@
+/**
+ * Responsible for calculating the X and Y coordinates of zones, lines, and stations 
+ * based on their temporal (date) and spatial (zone/transfer) relationships.
+ */
 export class LayoutEngine {
     constructor() {
         this.config = {
@@ -9,6 +13,11 @@ export class LayoutEngine {
         };
     }
 
+    /**
+     * Calculates the full layout required for the Metro renderer.
+     * @param {Object} data - The normalized timeline, events, zones, and lines.
+     * @returns {Object} Layout configuration containing computed scales, zones, lines, and station coordinates.
+     */
     calculate(data) {
         const { width, margins } = this.config;
         
@@ -66,14 +75,26 @@ export class LayoutEngine {
             x: xScale(event.dateObj)
         }));
 
+        // Build map of all stations to resolve transfer connections globally
+        const allStationsMap = new Map();
+        const transferFromMap = new Map();
+        data.lines.forEach(l => {
+            (l.stations || []).forEach(s => {
+                allStationsMap.set(s.id, s);
+                if (s.transferTo) {
+                    transferFromMap.set(s.transferTo, s.id);
+                }
+            });
+        });
+
         // 5. Calculate coordinates for lines and stations
         const lines = data.lines.map(line => {
             const zLines = zoneLines.get(line.zone);
-            const lineIndex = zLines.indexOf(line);
-            const z = zoneMap.get(line.zone);
+            const lineIndex = zLines ? zLines.indexOf(line) : 0;
+            const z = zoneMap.get(line.zone) || { collapsed: false, centerY: currentY };
             
             // Calculate base Y position relative to zone center
-            const totalLines = zLines.length;
+            const totalLines = zLines ? zLines.length : 1;
             const isLastInZone = lineIndex === totalLines - 1;
             const baseYOffset = z.collapsed ? 0 : (lineIndex - (totalLines - 1) / 2) * dynamicConfig.lineSpacing;
             const baseY = z.centerY + baseYOffset;
@@ -81,19 +102,9 @@ export class LayoutEngine {
             // Sort stations by date
             const sortedStations = [...line.stations].sort((a, b) => a.dateObj - b.dateObj);
 
-            // Build map of all stations to resolve transfer connections
-            const allStationsMap = new Map();
-            const transferFromMap = new Map();
-            data.lines.forEach(l => {
-                (l.stations || []).forEach(s => {
-                    allStationsMap.set(s.id, s);
-                    if (s.transferTo) {
-                        transferFromMap.set(s.transferTo, s.id);
-                    }
-                });
-            });
-
             // Calculate station positions with alternating vertical offset
+            // Intent: Alternate vertical placement for intermediate stations on long lines 
+            // to avoid label overlapping, unless overridden by transfer connections.
             const isLongLine = sortedStations.length > 2;
             let prevStationY = baseY;
 
@@ -162,7 +173,7 @@ export class LayoutEngine {
                     stationY = baseY + (transferDirection * dynamicConfig.lineSpacing * 0.35);
                 }
 
-                // Vermeide den letzten Knick: Die letzte Station übernimmt immer die Y-Position der vorletzten Station
+                // Avoid the final bend: the last station always inherits the Y-position of the penultimate station
                 if (i === sortedStations.length - 1 && i > 0) {
                     stationY = prevStationY;
                 }

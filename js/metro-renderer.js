@@ -1,4 +1,12 @@
-/** Orthogonaler Pfad (nur horizontale/vertikale Segmente) zwischen zwei Stationen. */
+/**
+ * Orthogonal path (only horizontal/vertical segments) between two stations.
+ * 
+ * @param {number} sx - Source X coordinate
+ * @param {number} sy - Source Y coordinate
+ * @param {number} tx - Target X coordinate
+ * @param {number} ty - Target Y coordinate
+ * @returns {string} SVG path string
+ */
 function buildOrthogonalRelationPath(sx, sy, tx, ty) {
     const off = 14;
     const dx = tx - sx;
@@ -29,6 +37,16 @@ function buildOrthogonalRelationPath(sx, sy, tx, ty) {
     return `M${x0},${y0}L${x0},${yMid}L${x1},${yMid}L${x1},${y1}`;
 }
 
+import { escapeHtml, sanitizeHtml } from './utils.js';
+
+export function getTintedColor(lineColor, zoneBg) {
+    return d3.interpolate(lineColor, zoneBg || '#ffffff')(0.7);
+}
+
+/**
+ * Renders the metro map visualization using D3.js.
+ * Manages the SVG structure, scales, layers, and visual components.
+ */
 export class MetroRenderer {
     constructor(containerSelector) {
         this.container = document.querySelector(containerSelector);
@@ -36,6 +54,13 @@ export class MetroRenderer {
         this._selectedRelationKey = null;
     }
 
+    /**
+     * Generates a routing path for a metro line.
+     * Introduces sloped segments to transition between stations on different Y coordinates.
+     * 
+     * @param {Array} stations - Array of station objects in the line
+     * @returns {Array} Array of path points with x, y, and lineId
+     */
     generateMetroPath(stations) {
         let path = [];
         for (let i = 0; i < stations.length; i++) {
@@ -51,39 +76,31 @@ export class MetroRenderer {
             if (curr.y === prev.y) {
                 path.push(point);
             } else {
+                // Calculate diagonal transitions between different Y-levels.
+                // A straight segment is required before entering a station for aesthetic flow.
                 const dx = curr.x - prev.x;
                 const dy = curr.y - prev.y;
                 const absDy = Math.abs(dy);
                 
-                // For small decorative lane changes, we start the 45-degree slope a fixed distance before the station
-                // rather than in the exact middle, to make it look like a "pulling into station" maneuver.
-                // We use a fixed distance (e.g. 20px) or half the X distance if it's too tight.
-                const slopeWidth = absDy; // For a 45 degree angle, dx = dy
+                const slopeWidth = absDy; 
                 
-                // Wir wollen, dass der Spurwechsel (die Diagonale) etwas VOR der Station stattfindet,
-                // und danach noch ein kurzes gerades Stück bis zur Station verläuft.
-                const straightBeforeStation = 15; // px gerade vor der Station
+                const straightBeforeStation = 15; 
                 const requiredSpace = slopeWidth + straightBeforeStation;
                 
                 if (Math.abs(dx) > requiredSpace) {
                     const direction = Math.sign(dx);
-                    // 1. Fahre auf alter Höhe bis kurz vor die Diagonale
                     const slopeStartX = curr.x - (requiredSpace * direction);
                     path.push({x: slopeStartX, y: prev.y, lineId: curr.lineId});
                     
-                    // 2. Diagonale
                     const slopeEndX = curr.x - (straightBeforeStation * direction);
                     path.push({x: slopeEndX, y: curr.y, lineId: curr.lineId});
                     
-                    // 3. Gerade bis in die Station
                     path.push(point);
                 } else if (Math.abs(dx) > slopeWidth) {
-                    // Falls nicht genug Platz für das gerade Stück ist, nur Diagonale
                     const slopeStartX = curr.x - (slopeWidth * Math.sign(dx));
                     path.push({x: slopeStartX, y: prev.y, lineId: curr.lineId});
                     path.push(point);
                 } else {
-                    // Fallback
                     path.push(point);
                 }
             }
@@ -91,6 +108,13 @@ export class MetroRenderer {
         return path;
     }
 
+    /**
+     * Main rendering method.
+     * Constructs the SVG structure, evaluates element bounding boxes for collision detection,
+     * and delegates rendering to specific layer methods.
+     * 
+     * @param {Object} layout - Layout data containing config, scales, zones, lines, and events
+     */
     render(layout) {
         const { config, xScale, zones, lines } = layout;
 
@@ -101,11 +125,10 @@ export class MetroRenderer {
             .attr('width', '100%')
             .attr('height', '100%')
             .attr('viewBox', `0 0 ${config.width} ${config.height}`)
-            .attr('preserveAspectRatio', 'xMidYMid meet')
+            .attr('preserveAspectRatio', 'xMinYMin meet')
             .attr('xmlns', 'http://www.w3.org/2000/svg')
             .style('background-color', '#ffffff');
 
-        // Add explicit white background rect for exports
         svg.append('rect')
             .attr('width', '100%')
             .attr('height', '100%')
@@ -126,11 +149,9 @@ export class MetroRenderer {
             .attr('d', 'M0,-3L8,0L0,3')
             .attr('fill', '#5a6a7a');
 
-        // Helper to compute pale zone background color
         const getPaleColor = (hexColor) => {
             const color = d3.color(hexColor || '#eeeeee');
             if (!color) return '#ffffff';
-            // Mix with white: 10% color, 90% white
             const r = Math.round(color.r * 0.1 + 255 * 0.9);
             const g = Math.round(color.g * 0.1 + 255 * 0.9);
             const b = Math.round(color.b * 0.1 + 255 * 0.9);
@@ -140,210 +161,51 @@ export class MetroRenderer {
         const zoneColors = new Map();
         zones.forEach(z => zoneColors.set(z.id, getPaleColor(z.color)));
 
-        // 0. Render Meta (Title & Organization)
         if (layout.meta) {
             const metaGroup = zoomGroup.append('g').attr('class', 'meta-info');
-            
             if (layout.meta.title) {
                 metaGroup.append('text')
                     .attr('x', 20)
                     .attr('y', 40)
-                    .attr('font-family', 'sans-serif')
+                    .attr('font-family', 'Helvetica, "Helvetica Neue", Arial, "Liberation Sans", sans-serif')
                     .attr('font-size', '24px')
                     .attr('font-weight', 'bold')
                     .attr('fill', '#333')
                     .text(layout.meta.title);
             }
-            
             if (layout.meta.organization) {
                 metaGroup.append('text')
                     .attr('x', 20)
                     .attr('y', 65)
-                    .attr('font-family', 'sans-serif')
+                    .attr('font-family', 'Helvetica, "Helvetica Neue", Arial, "Liberation Sans", sans-serif')
                     .attr('font-size', '14px')
                     .attr('fill', '#666')
                     .text(layout.meta.organization);
             }
         }
 
-        // 1. Render Zones Backgrounds
-        const zoneGroup = zoomGroup.append('g').attr('class', 'zones');
-        zones.forEach(zone => {
-            zoneGroup.append('rect')
-                .attr('x', 0)
-                .attr('y', zone.y)
-                .attr('width', Math.max(config.width * 2, 3000))
-                .attr('height', zone.height)
-                .attr('fill', zone.color || '#eee')
-                .attr('class', 'zone-band')
-                .attr('opacity', '0.1');
-        });
+        // SVG layers are ordered explicitly to control Z-index (Painter's Algorithm).
+        // Background elements are drawn first, followed by structural elements (lines),
+        // and finally foreground elements (stations, labels) to prevent occlusion.
+        const layers = {
+            zones: zoomGroup.append('g').attr('class', 'zones'),
+            gridQuarters: zoomGroup.append('g').attr('class', 'axis axis-grid-quarters'),
+            gridYears: zoomGroup.append('g').attr('class', 'axis axis-grid-years'),
+            today: zoomGroup.append('g').attr('class', 'today-line'),
+            events: zoomGroup.append('g').attr('class', 'events-lines'),
+            lineIndicators: zoomGroup.append('g').attr('class', 'line-indicators'),
+            relations: zoomGroup.append('g').attr('class', 'metro-relations'),
+            lines: zoomGroup.append('g').attr('class', 'lines'),
+            terminus: zoomGroup.append('g').attr('class', 'terminus-indicators'),
+            transferBg: zoomGroup.append('g').attr('class', 'transfer-bg'),
+            transferFg: zoomGroup.append('g').attr('class', 'transfer-fg'),
+            normalStations: zoomGroup.append('g').attr('class', 'normal-stations'),
+            labels: zoomGroup.append('g').attr('class', 'labels'),
+            globalLabels: zoomGroup.append('g').attr('class', 'global-labels')
+        };
 
-        // 2. Render Grid
-        // 2a. Quarters
-        const xAxisQuarters = d3.axisTop(xScale)
-            .ticks(d3.timeMonth.every(3))
-            .tickFormat(d => {
-                // Only show label if it's not the start of a year
-                if (d.getMonth() === 0) return "";
-                const quarter = Math.floor(d.getMonth() / 3) + 1;
-                return `Q${quarter}`;
-            });
-
-        zoomGroup.append('g')
-            .attr('class', 'axis axis-grid-quarters')
-            .attr('transform', `translate(0, ${config.margins.top})`)
-            .call(xAxisQuarters.tickSize(-config.height + config.margins.top + config.margins.bottom))
-            .selectAll("line")
-            .attr("stroke", "#e0e0e0")
-            .attr("stroke-width", 1);
-            
-        zoomGroup.selectAll(".axis-grid-quarters path").attr("stroke", "none");
-        zoomGroup.selectAll(".axis-grid-quarters text").attr("fill", "#999").attr("font-family", "sans-serif").attr("font-size", "7px");
-
-        // 2b. Years
-        const xAxisYears = d3.axisTop(xScale)
-            .ticks(d3.timeYear.every(1))
-            .tickFormat(d3.timeFormat("%Y"));
-
-        zoomGroup.append('g')
-            .attr('class', 'axis axis-grid-years')
-            .attr('transform', `translate(0, ${config.margins.top})`)
-            .call(xAxisYears.tickSize(-config.height + config.margins.top + config.margins.bottom))
-            .selectAll("line")
-            .attr("stroke", "#cccccc")
-            .attr("stroke-width", 1.5);
-
-        zoomGroup.selectAll(".axis-grid-years path").attr("stroke", "none");
-        zoomGroup.selectAll(".axis-grid-years text").attr("fill", "#555").attr("font-family", "sans-serif").attr("font-size", "15px").attr("font-weight", "bold");
-
-        // 3. Render Events (Vertical Lines)
-        const eventsGroup = zoomGroup.append('g').attr('class', 'events-lines');
-        const bottomY = config.height - config.margins.bottom;
-
-        (layout.events || []).forEach(event => {
-            eventsGroup.append('line')
-                .attr('x1', event.x)
-                .attr('y1', config.margins.top)
-                .attr('x2', event.x)
-                .attr('y2', bottomY)
-                .attr('stroke', '#d32f2f') // Red dashed line for events
-                .attr('stroke-width', 2)
-                .attr('stroke-dasharray', '5,5')
-                .attr('opacity', '0.7');
-        });
-
-        // Filter visible lines for rendering
         const visibleLines = lines.filter(l => !l.hidden);
 
-        // 4. Render Line Indicators (Pills)
-        const lineIndicatorsGroup = zoomGroup.append('g').attr('class', 'line-indicators');
-        visibleLines.forEach(line => {
-            lineIndicatorsGroup.append('line')
-                .attr('x1', 20)
-                .attr('y1', line.y)
-                .attr('x2', 40)
-                .attr('y2', line.y)
-                .attr('stroke', line.color)
-                .attr('stroke-width', 6)
-                .attr('stroke-linecap', 'round');
-        });
-
-        // 4.5 Relations Group (drawn below lines and stations, but above grids)
-        zoomGroup.append('g').attr('class', 'metro-relations');
-
-        // 5. Lines
-        const linesGroup = zoomGroup.append('g').attr('class', 'lines');
-        const lineGenerator = d3.line()
-            .x(d => d.x)
-            .y(d => d.y)
-            .curve(d3.curveLinear);
-
-        visibleLines.forEach(line => {
-            const routedPath = this.generateMetroPath(line.stations);
-            
-            // To support tinting, we need to draw segments instead of one single path
-            // We group the routedPath points into segments that correspond to the sections between stations
-            const segments = [];
-            let currentSegment = [];
-            let currentTint = false;
-            
-            // Reconstruct segments between stations
-            // We need to map the routed points back to the original stations to know when tint changes
-            let currentStationIndex = 0;
-            
-            for (let i = 0; i < routedPath.length; i++) {
-                const pt = routedPath[i];
-                currentSegment.push(pt);
-                
-                // If this point is exactly at the next station's coordinates (ignoring intermediate routing points)
-                const nextStation = line.stations[currentStationIndex];
-                if (nextStation && pt.x === nextStation.x && pt.y === nextStation.y) {
-                    
-                    // The segment ends here
-                    if (currentSegment.length > 1) {
-                        segments.push({
-                            path: currentSegment,
-                            tint: currentStationIndex > 0 ? line.stations[currentStationIndex-1].tint : false
-                        });
-                    }
-                    
-                    // Start new segment
-                    currentSegment = [pt];
-                    currentStationIndex++;
-                }
-            }
-            // Add final segment if any points left after last station
-            if (currentSegment.length > 1) {
-                 segments.push({
-                     path: currentSegment,
-                     tint: currentStationIndex > 0 && currentStationIndex <= line.stations.length ? line.stations[currentStationIndex-1].tint : false
-                 });
-            }
-
-            segments.forEach((seg, idx) => {
-                let strokeColor = line.color;
-                if (seg.tint) {
-                    // Calculate a solid faded color instead of using opacity to prevent grid from shining through
-                    const zoneBg = zoneColors.get(line.zone) || '#ffffff';
-                    // Mix the line color with the zone background color (30% line color, 70% zone background)
-                    strokeColor = d3.interpolate(line.color, zoneBg)(0.7);
-                }
-
-                linesGroup.append('path')
-                    .datum(seg.path)
-                    .attr('d', lineGenerator)
-                    .attr('class', 'metro-line line-' + line.id)
-                    .attr('data-line-id', line.id)
-                    .attr('stroke', strokeColor)
-                    .attr('stroke-width', 8)
-                    .attr('fill', 'none')
-                    .attr('stroke-linecap', 'round')
-                    .attr('stroke-linejoin', 'round')
-                    .style('cursor', 'pointer')
-                    .on('click', (event) => this.highlightLine(line.id));
-            });
-        });
-
-        // Terminus Indicators
-        const terminusGroup = zoomGroup.append('g').attr('class', 'terminus-indicators');
-        visibleLines.forEach(line => {
-            line.stations.forEach(station => {
-                if (station.type === 'terminus') {
-                    terminusGroup.append('line')
-                        .attr('x1', station.x)
-                        .attr('y1', station.y - 12)
-                        .attr('x2', station.x)
-                        .attr('y2', station.y + 12)
-                        .attr('stroke', line.color)
-                        .attr('stroke-width', 4)
-                        .attr('stroke-linecap', 'round')
-                        .attr('class', 'terminus-line line-' + line.id);
-                }
-            });
-        });
-
-        // Links calculation
         const transferLinks = [];
         const allStations = new Map();
         lines.forEach(l => l.stations.forEach(s => allStations.set(s.id, { ...s, color: l.color, hidden: l.hidden })));
@@ -352,10 +214,7 @@ export class MetroRenderer {
             if (s.transferTo && allStations.has(s.transferTo)) {
                 const target = allStations.get(s.transferTo);
                 if (!s.hidden || !target.hidden) {
-                    transferLinks.push({
-                        source: s,
-                        target: target
-                    });
+                    transferLinks.push({ source: s, target: target });
                 }
             }
         });
@@ -375,33 +234,20 @@ export class MetroRenderer {
                     const sk = `sync:${a}:${b}`;
                     if (syncSeen.has(sk)) return;
                     syncSeen.add(sk);
-                    relationEdges.push({
-                        source: s,
-                        target,
-                        kind,
-                        label: rel.label || '',
-                        key: sk
-                    });
+                    relationEdges.push({ source: s, target, kind, label: rel.label || '', key: sk });
                 } else {
-                    relationEdges.push({
-                        source: s,
-                        target,
-                        kind,
-                        label: rel.label || '',
-                        key: `dep:${s.id}->${rel.target}`
-                    });
+                    relationEdges.push({ source: s, target, kind, label: rel.label || '', key: `dep:${s.id}->${rel.target}` });
                 }
             });
         });
 
-        // Collision Detection for Labels
+        // Maintain a spatial registry of occupied bounding boxes to detect and resolve overlaps,
+        // primarily used for station label placement.
         const occupiedBoxes = [];
-        
-        function addBox(xMin, xMax, yMin, yMax) {
+        const addBox = (xMin, xMax, yMin, yMax) => {
             occupiedBoxes.push({xMin, xMax, yMin, yMax});
-        }
-        
-        function checkCollision(box) {
+        };
+        const checkCollision = (box) => {
             const pad = 2;
             for (let b of occupiedBoxes) {
                 if (box.xMin - pad < b.xMax && box.xMax + pad > b.xMin && 
@@ -410,11 +256,12 @@ export class MetroRenderer {
                 }
             }
             return false;
-        }
+        };
 
-        // Add line segments to occupiedBoxes
+        const routedPaths = new Map();
         visibleLines.forEach(line => {
             const routedPath = this.generateMetroPath(line.stations);
+            routedPaths.set(line.id, routedPath);
             for (let i = 0; i < routedPath.length - 1; i++) {
                 const p1 = routedPath[i];
                 const p2 = routedPath[i+1];
@@ -427,7 +274,6 @@ export class MetroRenderer {
             }
         });
 
-        // Add transfer links to occupiedBoxes
         transferLinks.forEach(link => {
             addBox(
                 Math.min(link.source.x, link.target.x) - 10,
@@ -437,7 +283,6 @@ export class MetroRenderer {
             );
         });
 
-        // Add station circles to occupiedBoxes
         visibleLines.forEach(line => {
             line.stations.forEach(station => {
                 const isTransfer = station.type === 'transfer' || station.transferTo || station.transferFrom;
@@ -446,16 +291,202 @@ export class MetroRenderer {
             });
         });
 
-        // Groups for layering
-        const transferBgGroup = zoomGroup.append('g').attr('class', 'transfer-bg');
-        const transferFgGroup = zoomGroup.append('g').attr('class', 'transfer-fg');
-        const normalStationsGroup = zoomGroup.append('g').attr('class', 'normal-stations');
-        const labelsGroup = zoomGroup.append('g').attr('class', 'labels');
+        this.renderZones(layers.zones, zones, config);
+        this.renderGrid(layers.gridQuarters, layers.gridYears, xScale, config);
+        this.renderToday(layers.today, layout, config, xScale);
+        this.renderEvents(layers.events, layout.events, config);
+        this.renderLines(layers.lineIndicators, layers.lines, layers.terminus, visibleLines, zoneColors, routedPaths);
+        this.renderTransfers(layers.transferBg, layers.transferFg, transferLinks);
+        this.renderRelations(layers.relations, zoomGroup, relationEdges);
+        this.renderStations(layers.transferBg, layers.transferFg, layers.normalStations, layers.labels, visibleLines, zoneColors, allStations, addBox, checkCollision);
+        this.renderLabels(layers.globalLabels, layout, visibleLines, zones, zoneColors, config);
+        this.setupZoom(svg, zoomGroup);
 
-        // Transfer Links lines
+        svg.on('click', (event) => {
+            if (event.target.tagName === 'svg' || event.target.tagName === 'rect') {
+                this.clearHighlight();
+            }
+        });
+
+        this.svgElement = svg.node();
+    }
+
+    renderZones(group, zones, config) {
+        zones.forEach(zone => {
+            group.append('rect')
+                .attr('x', 0)
+                .attr('y', zone.y)
+                .attr('width', Math.max(config.width * 2, 3000))
+                .attr('height', zone.height)
+                .attr('fill', zone.color || '#eee')
+                .attr('class', 'zone-band')
+                .attr('opacity', '0.1');
+        });
+    }
+
+    renderGrid(quartersGroup, yearsGroup, xScale, config) {
+        const xAxisQuarters = d3.axisTop(xScale)
+            .ticks(d3.timeMonth.every(3))
+            .tickFormat(d => {
+                if (d.getMonth() === 0) return "";
+                const quarter = Math.floor(d.getMonth() / 3) + 1;
+                return `Q${quarter}`;
+            });
+
+        quartersGroup
+            .attr('transform', `translate(0, ${config.margins.top})`)
+            .call(xAxisQuarters.tickSize(-config.height + config.margins.top + config.margins.bottom))
+            .selectAll("line")
+            .attr("stroke", "#e0e0e0")
+            .attr("stroke-width", 1);
+            
+        quartersGroup.selectAll("path").attr("stroke", "none");
+        quartersGroup.selectAll("text").attr("fill", "#999").attr("font-family", 'Helvetica, "Helvetica Neue", Arial, "Liberation Sans", sans-serif').attr("font-size", "7px");
+
+        const xAxisYears = d3.axisTop(xScale)
+            .ticks(d3.timeYear.every(1))
+            .tickFormat(d3.timeFormat("%Y"));
+
+        yearsGroup
+            .attr('transform', `translate(0, ${config.margins.top})`)
+            .call(xAxisYears.tickSize(-config.height + config.margins.top + config.margins.bottom))
+            .selectAll("line")
+            .attr("stroke", "#cccccc")
+            .attr("stroke-width", 1.5);
+
+        yearsGroup.selectAll("path").attr("stroke", "none");
+        yearsGroup.selectAll("text").attr("fill", "#555").attr("font-family", 'Helvetica, "Helvetica Neue", Arial, "Liberation Sans", sans-serif').attr("font-size", "15px").attr("font-weight", "bold");
+    }
+
+    renderToday(group, layout, config, xScale) {
+        const today = new Date();
+        const domain = xScale.domain();
+        if (today >= domain[0] && today <= domain[1]) {
+            const x = xScale(today);
+            const bottomY = config.height - config.margins.bottom;
+            
+            group.append('line')
+                .attr('x1', x)
+                .attr('y1', config.margins.top)
+                .attr('x2', x)
+                .attr('y2', bottomY)
+                .attr('stroke', '#4caf50')
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', '5,5')
+                .attr('opacity', '0.8');
+
+            const labelText = typeof i18next !== 'undefined' ? i18next.t('js.today') : 'Heute';
+
+            group.append('text')
+                .attr('x', x)
+                .attr('y', config.margins.top - 40)
+                .attr('text-anchor', 'middle')
+                .attr('font-family', 'Helvetica, "Helvetica Neue", Arial, "Liberation Sans", sans-serif')
+                .attr('font-size', '12px')
+                .attr('font-weight', 'bold')
+                .attr('fill', '#4caf50')
+                .text(labelText);
+        }
+    }
+
+    renderEvents(group, events, config) {
+        const bottomY = config.height - config.margins.bottom;
+        (events || []).forEach(event => {
+            group.append('line')
+                .attr('x1', event.x)
+                .attr('y1', config.margins.top)
+                .attr('x2', event.x)
+                .attr('y2', bottomY)
+                .attr('stroke', '#d32f2f')
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', '5,5')
+                .attr('opacity', '0.7');
+        });
+    }
+
+    renderLines(indicatorsGroup, linesGroup, terminusGroup, visibleLines, zoneColors, routedPaths) {
+        const lineGenerator = d3.line()
+            .x(d => d.x)
+            .y(d => d.y)
+            .curve(d3.curveLinear);
+
+        visibleLines.forEach(line => {
+            indicatorsGroup.append('line')
+                .attr('x1', 20)
+                .attr('y1', line.y)
+                .attr('x2', 40)
+                .attr('y2', line.y)
+                .attr('stroke', line.color)
+                .attr('stroke-width', 6)
+                .attr('stroke-linecap', 'round');
+
+            const routedPath = routedPaths.get(line.id);
+            const segments = [];
+            let currentSegment = [];
+            let currentStationIndex = 0;
+            
+            for (let i = 0; i < routedPath.length; i++) {
+                const pt = routedPath[i];
+                currentSegment.push(pt);
+                
+                const nextStation = line.stations[currentStationIndex];
+                if (nextStation && pt.x === nextStation.x && pt.y === nextStation.y) {
+                    if (currentSegment.length > 1) {
+                        segments.push({
+                            path: currentSegment,
+                            tint: currentStationIndex > 0 ? line.stations[currentStationIndex-1].tint : false
+                        });
+                    }
+                    currentSegment = [pt];
+                    currentStationIndex++;
+                }
+            }
+            if (currentSegment.length > 1) {
+                 segments.push({
+                     path: currentSegment,
+                     tint: currentStationIndex > 0 && currentStationIndex <= line.stations.length ? line.stations[currentStationIndex-1].tint : false
+                 });
+            }
+
+            segments.forEach((seg) => {
+                let strokeColor = line.color;
+                if (seg.tint) {
+                    strokeColor = getTintedColor(line.color, zoneColors.get(line.zone));
+                }
+
+                linesGroup.append('path')
+                    .datum(seg.path)
+                    .attr('d', lineGenerator)
+                    .attr('class', 'metro-line line-' + line.id)
+                    .attr('data-line-id', line.id)
+                    .attr('stroke', strokeColor)
+                    .attr('stroke-width', 8)
+                    .attr('fill', 'none')
+                    .attr('stroke-linecap', 'round')
+                    .attr('stroke-linejoin', 'round')
+                    .style('cursor', 'pointer')
+                    .on('click', () => this.highlightLine(line.id));
+            });
+
+            line.stations.forEach(station => {
+                if (station.type === 'terminus') {
+                    terminusGroup.append('line')
+                        .attr('x1', station.x)
+                        .attr('y1', station.y - 12)
+                        .attr('x2', station.x)
+                        .attr('y2', station.y + 12)
+                        .attr('stroke', line.color)
+                        .attr('stroke-width', 4)
+                        .attr('stroke-linecap', 'round')
+                        .attr('class', 'terminus-line line-' + line.id);
+                }
+            });
+        });
+    }
+
+    renderTransfers(bgGroup, fgGroup, transferLinks) {
         transferLinks.forEach(link => {
-            // Background (Black outline)
-            transferBgGroup.append('line')
+            bgGroup.append('line')
                 .attr('x1', link.source.x)
                 .attr('y1', link.source.y)
                 .attr('x2', link.target.x)
@@ -464,8 +495,7 @@ export class MetroRenderer {
                 .attr('stroke-width', 18)
                 .attr('stroke-linecap', 'round');
             
-            // Foreground (White inner)
-            transferFgGroup.append('line')
+            fgGroup.append('line')
                 .attr('x1', link.source.x)
                 .attr('y1', link.source.y)
                 .attr('x2', link.target.x)
@@ -474,8 +504,16 @@ export class MetroRenderer {
                 .attr('stroke-width', 12)
                 .attr('stroke-linecap', 'round');
         });
+    }
 
-        const relationsGroup = zoomGroup.select('.metro-relations');
+    /**
+     * Renders orthogonal paths for dependencies and synchronized relationships between stations.
+     * 
+     * @param {d3.Selection} relationsGroup - Group for rendering relation paths
+     * @param {d3.Selection} zoomGroup - Main zoomable group
+     * @param {Array} relationEdges - Edges representing relations
+     */
+    renderRelations(relationsGroup, zoomGroup, relationEdges) {
         const renderer = this;
 
         relationEdges.forEach((edge) => {
@@ -501,7 +539,7 @@ export class MetroRenderer {
                 visPath.classed('relation-path-selected', true);
             }
 
-            const kindDe = edge.kind === 'synchronizedWith' ? 'Zeitgleich mit' : 'Abhängig von';
+            const kindDe = edge.kind === 'synchronizedWith' ? i18next.t('editor.relSynchronized') : i18next.t('editor.relDependsOn');
             const safeNote = edge.label
                 ? String(edge.label)
                     .replace(/&/g, '&amp;')
@@ -524,7 +562,7 @@ export class MetroRenderer {
                     if (renderer._selectedRelationKey) return;
                     visPath.classed('metro-relation-hover', true);
                     renderer.tooltip.classed('hidden', false)
-                        .html(`<strong>Beziehung</strong><br/>${kindDe}<br/>${edge.source.label} → ${edge.target.label}${noteHtml}`)
+                        .html(i18next.t('js.relationTooltip', { kind: kindDe, source: escapeHtml(edge.source.label), target: escapeHtml(edge.target.label) }) + noteHtml)
                         .style('left', (event.pageX + 15) + 'px')
                         .style('top', (event.pageY - 15) + 'px');
                 })
@@ -557,34 +595,44 @@ export class MetroRenderer {
                             .style('pointer-events', 'none');
                     });
                     renderer.tooltip.classed('hidden', false)
-                        .html(`<strong>Beziehung</strong> (Auswahl)<br/>${kindDe}<br/>${edge.source.label} → ${edge.target.label}${noteHtml}`)
+                        .html(i18next.t('js.relationTooltipSelected', { kind: kindDe, source: escapeHtml(edge.source.label), target: escapeHtml(edge.target.label) }) + noteHtml)
                         .style('left', (event.pageX + 15) + 'px')
                         .style('top', (event.pageY - 15) + 'px');
                 });
         });
+    }
 
-        // Stations
+    /**
+     * Renders stations and their labels.
+     * Applies collision detection to decide whether a label should be placed above or below the station
+     * to avoid overlapping with lines, other stations, or transfer links.
+     * 
+     * @param {d3.Selection} transferBgGroup - Group for transfer backgrounds
+     * @param {d3.Selection} transferFgGroup - Group for transfer foregrounds
+     * @param {d3.Selection} normalStationsGroup - Group for standard stations
+     * @param {d3.Selection} labelsGroup - Group for labels
+     * @param {Array} visibleLines - Active lines to render
+     * @param {Map} zoneColors - Map of zone background colors
+     * @param {Map} allStations - Map of all station data
+     * @param {Function} addBox - Registers a bounding box
+     * @param {Function} checkCollision - Tests if a box overlaps existing elements
+     */
+    renderStations(transferBgGroup, transferFgGroup, normalStationsGroup, labelsGroup, visibleLines, zoneColors, allStations, addBox, checkCollision) {
         visibleLines.forEach(line => {
             line.stations.forEach((station, index) => {
                 const isTransfer = station.type === 'transfer' || station.transferTo || station.transferFrom;
                 
                 let interactiveElement;
-                
-                // Determine station circle color
                 let stationColor = line.color;
-                // If this station starts a tinted segment, OR the previous segment was tinted and this station is just an intermediate point
-                // we should probably use the tinted color, UNLESS it's the start/end of a non-tinted segment.
-                // Let's check if both surrounding segments (if they exist) are tinted.
+                
                 const isTintedHere = station.tint;
                 const wasTintedBefore = index > 0 ? line.stations[index - 1].tint : false;
                 
                 if (isTintedHere || (index > 0 && wasTintedBefore && index === line.stations.length - 1)) {
-                    const zoneBg = zoneColors.get(line.zone) || '#ffffff';
-                    stationColor = d3.interpolate(line.color, zoneBg)(0.7);
+                    stationColor = getTintedColor(line.color, zoneColors.get(line.zone));
                 }
 
                 if (isTransfer) {
-                    // Transfer Station Background
                     transferBgGroup.append('circle')
                         .attr('cx', station.x)
                         .attr('cy', station.y)
@@ -592,7 +640,6 @@ export class MetroRenderer {
                         .attr('fill', '#000')
                         .attr('class', `line-${line.id}`);
 
-                    // Transfer Station Foreground
                     interactiveElement = transferFgGroup.append('circle')
                         .attr('cx', station.x)
                         .attr('cy', station.y)
@@ -601,7 +648,6 @@ export class MetroRenderer {
                         .attr('class', `station-circle line-${line.id}`)
                         .style('cursor', 'pointer');
                 } else if (station.isStop) {
-                    // Stop (Haltestelle) - 90 degree line
                     interactiveElement = normalStationsGroup.append('line')
                         .attr('x1', station.x)
                         .attr('y1', station.y - 8)
@@ -613,7 +659,6 @@ export class MetroRenderer {
                         .attr('class', `station-stop line-${line.id}`)
                         .style('cursor', 'pointer');
                     
-                    // Add a transparent circle overlay for better hover/click area
                     const hoverArea = normalStationsGroup.append('circle')
                         .attr('cx', station.x)
                         .attr('cy', station.y)
@@ -621,13 +666,11 @@ export class MetroRenderer {
                         .attr('fill', 'transparent')
                         .style('cursor', 'pointer');
                     
-                    // Link the hoverArea events to the interactiveElement logic
                     hoverArea.on('mouseover', (event) => interactiveElement.dispatch('mouseover', {bubbles: true, detail: event}))
                              .on('mouseout', (event) => interactiveElement.dispatch('mouseout', {bubbles: true, detail: event}))
                              .on('click', (event) => interactiveElement.dispatch('click', {bubbles: true, detail: event}));
                              
                 } else {
-                    // Normal Station
                     interactiveElement = normalStationsGroup.append('circle')
                         .attr('cx', station.x)
                         .attr('cy', station.y)
@@ -639,9 +682,7 @@ export class MetroRenderer {
                         .style('cursor', 'pointer');
                 }
 
-                // Tooltip events
                 interactiveElement.on('mouseover', (event) => {
-                    // Unwrap the detail if this came from the hoverArea transparent circle
                     const realEvent = event.detail && event.detail.pageX ? event.detail : event;
                     
                     let durationText = '';
@@ -650,21 +691,21 @@ export class MetroRenderer {
                         if (station.dateObj && nextStation.dateObj) {
                             const diffTime = nextStation.dateObj - station.dateObj;
                             const diffWeeks = Math.round(diffTime / (1000 * 60 * 60 * 24 * 7));
-                            durationText = `<br/>Dauer bis ${nextStation.label}: ca. ${diffWeeks} Wochen`;
+                            durationText = `<br/>${i18next.t('js.durationTo', { target: escapeHtml(nextStation.label), weeks: diffWeeks })}`;
                         }
                     }
 
                     let descHtml = '';
                     if (station.description && station.description.trim() !== '') {
                         let parsedMd = typeof marked !== 'undefined' ? marked.parse(station.description) : station.description;
-                        descHtml = `<div class="tooltip-desc">${parsedMd}</div>`;
+                        descHtml = `<div class="tooltip-desc">${sanitizeHtml(parsedMd)}</div>`;
                     }
                     
                     this.tooltip.classed('hidden', false)
                         .html(`
-                            <strong>${station.label}</strong><br/>
-                            Linie: ${line.label}<br/>
-                            Datum: ${station.date}${durationText}
+                            <strong>${escapeHtml(station.label)}</strong><br/>
+                            ${i18next.t('js.tooltipLine')}: ${escapeHtml(line.label)}<br/>
+                            ${i18next.t('js.tooltipDate')}: ${escapeHtml(station.date)}${durationText}
                             ${descHtml}
                         `)
                         .style('left', (realEvent.pageX + 15) + 'px')
@@ -686,21 +727,18 @@ export class MetroRenderer {
                     const realEvent = event.detail && event.detail.stopPropagation ? event.detail : event;
                     realEvent.stopPropagation();
                     this.highlightLine(line.id);
-                    // Dispatch custom event to trigger Alpine scroll
                     window.dispatchEvent(new CustomEvent('focus-station', {
                         detail: { id: station.id }
                     }));
                 });
 
-                // Skip drawing label text permanently on map if it is a stop (Haltestelle)
                 if (station.isStop) return;
 
-                // Station label collision detection
                 const width = station.label.length * 6.5; 
                 const height = 14;
 
                 const topOffset = isTransfer ? -18 : -14;
-                const bottomOffset = isTransfer ? 26 : 22; // text baseline is roughly at the bottom
+                const bottomOffset = isTransfer ? 26 : 22; 
 
                 const topBox = {
                     xMin: station.x - width/2,
@@ -720,7 +758,6 @@ export class MetroRenderer {
                 let forceBottom = false;
                 let forceTop = false;
 
-                // For transfer stations, always place the label on the "outside" of the transfer link
                 if (isTransfer) {
                     let connectedStationId = station.transferTo;
                     if (!connectedStationId) {
@@ -743,15 +780,12 @@ export class MetroRenderer {
                     forceBottom = true;
                 }
 
-                // Remove the strict even/odd forcing because it can cause the top-most line to force bottom incorrectly
-                // if it happens to be an odd index (which depends on total number of lines in zone).
-                // Let the collision detection handle it, but we can give it a hint:
                 let preferredOffset = topOffset;
                 if (!line.isLastInZone && line.lineIndex % 2 !== 0 && !isTransfer) {
-                    // For non-last, odd-indexed lines, prefer bottom if it doesn't collide
                     preferredOffset = bottomOffset;
                 }
 
+                // Resolve label placement by testing preferred top/bottom positions against occupied boxes.
                 if (forceBottom) {
                     finalOffset = bottomOffset;
                     addBox(bottomBox.xMin, bottomBox.xMax, bottomBox.yMin, bottomBox.yMax);
@@ -760,7 +794,6 @@ export class MetroRenderer {
                     addBox(topBox.xMin, topBox.xMax, topBox.yMin, topBox.yMax);
                 } else {
                     if (preferredOffset === bottomOffset) {
-                        // Try bottom first
                         if (!checkCollision(bottomBox)) {
                             finalOffset = bottomOffset;
                             addBox(bottomBox.xMin, bottomBox.xMax, bottomBox.yMin, bottomBox.yMax);
@@ -768,11 +801,10 @@ export class MetroRenderer {
                             finalOffset = topOffset;
                             addBox(topBox.xMin, topBox.xMax, topBox.yMin, topBox.yMax);
                         } else {
-                            finalOffset = bottomOffset; // Default fallback
+                            finalOffset = bottomOffset; 
                             addBox(bottomBox.xMin, bottomBox.xMax, bottomBox.yMin, bottomBox.yMax);
                         }
                     } else {
-                        // Try top first
                         if (!checkCollision(topBox)) {
                             finalOffset = topOffset;
                             addBox(topBox.xMin, topBox.xMax, topBox.yMin, topBox.yMax);
@@ -780,105 +812,118 @@ export class MetroRenderer {
                             finalOffset = bottomOffset;
                             addBox(bottomBox.xMin, bottomBox.xMax, bottomBox.yMin, bottomBox.yMax);
                         } else {
-                            finalOffset = topOffset; // Default fallback
+                            finalOffset = topOffset; 
                             addBox(topBox.xMin, topBox.xMax, topBox.yMin, topBox.yMax);
                         }
                     }
                 }
                 
                 if (station.flipLabel) {
-                    // Toggle offset if user explicitly requested flip
                     finalOffset = (finalOffset === topOffset) ? bottomOffset : topOffset;
-                    // We don't adjust the bounding box here because the collision system is mostly additive and we are overriding its output manually
                 }
+
+                labelsGroup.append('text')
+                    .attr('x', station.x)
+                    .attr('y', station.y + finalOffset)
+                    .attr('class', `station-label-bg line-${line.id}`)
+                    .attr('text-anchor', 'middle')
+                    .attr('font-family', 'Helvetica, "Helvetica Neue", Arial, "Liberation Sans", sans-serif')
+                    .attr('font-size', '12px')
+                    .attr('fill', 'none')
+                    .attr('stroke', zoneColors.get(line.zone))
+                    .attr('stroke-width', 3)
+                    .attr('stroke-linejoin', 'round')
+                    .text(station.label);
 
                 labelsGroup.append('text')
                     .attr('x', station.x)
                     .attr('y', station.y + finalOffset)
                     .attr('class', `station-label line-${line.id}`)
                     .attr('text-anchor', 'middle')
-                    .attr('font-family', 'sans-serif')
+                    .attr('font-family', 'Helvetica, "Helvetica Neue", Arial, "Liberation Sans", sans-serif')
                     .attr('font-size', '12px')
                     .attr('fill', '#333')
-                    .attr('stroke', zoneColors.get(line.zone))
-                    .attr('stroke-width', 3)
-                    .attr('paint-order', 'stroke fill')
-                    .attr('stroke-linejoin', 'round')
                     .text(station.label);
             });
         });
+    }
 
-        // 9. Render All Texts/Labels at the very top (highest Z-Order)
-        const globalLabelsGroup = zoomGroup.append('g').attr('class', 'global-labels');
+    renderLabels(group, layout, visibleLines, zones, zoneColors, config) {
+        const bottomY = config.height - config.margins.bottom;
 
-        // Event Labels
         (layout.events || []).forEach(event => {
-            // Label at the bottom
-            globalLabelsGroup.append('text')
+            group.append('text')
                 .attr('x', event.x)
                 .attr('y', bottomY + 20)
                 .attr('text-anchor', 'middle')
-                .attr('font-family', 'sans-serif')
+                .attr('font-family', 'Helvetica, "Helvetica Neue", Arial, "Liberation Sans", sans-serif')
                 .attr('font-size', '12px')
                 .attr('font-weight', 'bold')
                 .attr('fill', '#d32f2f')
                 .text(event.label);
 
-            // Date at the top (above the year grid)
-            globalLabelsGroup.append('text')
+            group.append('text')
                 .attr('x', event.x)
                 .attr('y', config.margins.top - 25)
                 .attr('text-anchor', 'middle')
-                .attr('font-family', 'sans-serif')
+                .attr('font-family', 'Helvetica, "Helvetica Neue", Arial, "Liberation Sans", sans-serif')
                 .attr('font-size', '11px')
                 .attr('font-weight', 'bold')
                 .attr('fill', '#d32f2f')
                 .text(event.date);
         });
 
-        // Zone Labels
         zones.forEach(zone => {
-            const labelGroup = globalLabelsGroup.append('g')
+            const labelGroup = group.append('g')
                 .style('cursor', 'pointer')
                 .on('click', () => {
                     window.dispatchEvent(new CustomEvent('toggle-zone', { detail: { id: zone.id } }));
                 });
 
-            labelGroup.append('text')
-                .attr('x', 20)
-                .attr('y', zone.y + 30)
-                .attr('font-family', 'sans-serif')
-                .attr('font-size', '12px')
-                .attr('fill', '#888')
-                .text(zone.collapsed ? '▶' : '▼');
+            if (zone.collapsed) {
+                labelGroup.append('path')
+                    .attr('d', `M 20 ${zone.y + 21} L 28 ${zone.y + 26} L 20 ${zone.y + 31} Z`)
+                    .attr('fill', '#888');
+            } else {
+                labelGroup.append('path')
+                    .attr('d', `M 17 ${zone.y + 24} L 27 ${zone.y + 24} L 22 ${zone.y + 30} Z`)
+                    .attr('fill', '#888');
+            }
 
             labelGroup.append('text')
                 .attr('x', 38)
                 .attr('y', zone.y + 30)
                 .attr('class', 'zone-label')
-                .attr('font-family', 'sans-serif')
+                .attr('font-family', 'Helvetica, "Helvetica Neue", Arial, "Liberation Sans", sans-serif')
                 .attr('font-size', '14px')
                 .attr('font-weight', 'bold')
                 .attr('fill', '#555')
                 .text(zone.label);
         });
 
-        // Line Labels
         visibleLines.forEach(line => {
-            globalLabelsGroup.append('text')
+            group.append('text')
                 .attr('x', 50)
-                .attr('y', line.y + 4) // adjust for vertical alignment with the pill
-                .attr('font-family', 'sans-serif')
+                .attr('y', line.y + 4) 
+                .attr('font-family', 'Helvetica, "Helvetica Neue", Arial, "Liberation Sans", sans-serif')
                 .attr('font-size', '12px')
-                .attr('fill', '#333')
+                .attr('fill', 'none')
                 .attr('stroke', zoneColors.get(line.zone))
                 .attr('stroke-width', 3)
-                .attr('paint-order', 'stroke fill')
                 .attr('stroke-linejoin', 'round')
                 .text(line.label);
-        });
 
-        // Setup Zoom
+            group.append('text')
+                .attr('x', 50)
+                .attr('y', line.y + 4) 
+                .attr('font-family', 'Helvetica, "Helvetica Neue", Arial, "Liberation Sans", sans-serif')
+                .attr('font-size', '12px')
+                .attr('fill', '#333')
+                .text(line.label);
+        });
+    }
+
+    setupZoom(svg, zoomGroup) {
         const zoom = d3.zoom()
             .scaleExtent([0.2, 5])
             .on('zoom', (event) => {
@@ -886,15 +931,6 @@ export class MetroRenderer {
             });
 
         svg.call(zoom);
-        
-        // Background click to clear highlight
-        svg.on('click', (event) => {
-            if (event.target.tagName === 'svg' || event.target.tagName === 'rect') {
-                this.clearHighlight();
-            }
-        });
-
-        this.svgElement = svg.node();
     }
 
     highlightLine(lineId) {

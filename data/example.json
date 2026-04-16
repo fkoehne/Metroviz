@@ -1,549 +1,459 @@
 {
   "meta": {
-    "title": "IT-Strategie 2026-2027",
-    "organization": "ZLB"
+    "title": "Digital Independence Roadmap 2026",
+    "organization": "DI.DAY"
   },
   "timeline": {
-    "start": "2025-Q4",
-    "end": "2027-02-01"
+    "start": "2026-01-01",
+    "end": "2027-01"
   },
+  "events": [
+    {
+      "id": "event-diday-start",
+      "label": "Kickoff DI.DAY 2026",
+      "date": "2026-01-25"
+    },
+    {
+      "id": "event-diday-summer",
+      "label": "Halbzeitbilanz",
+      "date": "2026-06-28"
+    },
+    {
+      "id": "event-diday-end",
+      "label": "Jahresabschluss 2026",
+      "date": "2026-12-27"
+    }
+  ],
   "zones": [
     {
-      "id": "exchange",
-      "label": "Exchange",
-      "color": "#bb1111",
+      "id": "zone-comm",
+      "label": "Messenger",
+      "color": "#00A0E2",
       "collapsed": false
     },
     {
-      "id": "groupware",
-      "label": "Groupware (Mail, Kalender, ...)",
-      "color": "#2354e7",
-      "collapsed": true
+      "id": "zone-5nkit1",
+      "label": "Karten",
+      "color": "#FCCC0A",
+      "collapsed": false
     },
     {
-      "id": "office",
-      "label": "Office-Anwendungen (Text, Tabellen, ...)",
-      "color": "#d9c14a",
-      "collapsed": true
+      "id": "zone-office",
+      "label": "Büro & System",
+      "color": "#66C028",
+      "collapsed": false
     },
     {
-      "id": "filecloud",
-      "label": "Dateicloud",
-      "color": "#27AE60",
-      "collapsed": true
-    },
-    {
-      "id": "mobil",
-      "label": "Mobiles Arbeiten",
-      "color": "#6f3bb0",
-      "collapsed": true
-    },
-    {
-      "id": "zone-85cjcn",
-      "label": "Wins",
-      "color": "#9c118a",
-      "collapsed": true
+      "id": "zone-social",
+      "label": "Social Media",
+      "color": "#9364CC",
+      "collapsed": false
     }
   ],
   "lines": [
     {
-      "id": "line-lb6l4g",
-      "label": "Office 365 E3 Lizenzen",
-      "color": "#d66800",
-      "zone": "office",
+      "id": "line-wa",
+      "label": "WhatsApp",
+      "color": "#0064B0",
+      "zone": "zone-comm",
       "stations": [
         {
-          "id": "station-vkkzgr",
-          "label": "Kauf 450/m",
-          "date": "2026-05-31",
-          "type": "start",
-          "description": "450 Lizenzen, monatlich kündbar, Perspektive 2 Monate für Migration",
-          "tint": false
-        },
-        {
-          "id": "station-vqf14w",
-          "label": "Kündigung",
-          "date": "2026-08-01",
-          "type": "milestone",
-          "tint": true,
-          "description": "Nach Exchange-Migration werden alle Office 365 Lizenzen vorerst zum Monatsende gekündigt"
-        },
-        {
-          "id": "station-ahfjrf",
-          "label": "Kauf 100/y",
-          "date": "2026-10-01",
-          "type": "milestone",
-          "description": "Maximal 100, jährlich kündbar, nur für Power-User und Legacy-Systeme"
-        },
-        {
-          "id": "station-ldkfkt",
-          "label": "Kündigung /Verlängerung",
-          "date": "2027-Q1",
-          "type": "milestone"
-        }
-      ]
-    },
-    {
-      "id": "ms-office",
-      "label": "Microsoft Office",
-      "color": "#ffb005",
-      "zone": "office",
-      "stations": [
-        {
-          "id": "mso-2016",
-          "label": "Office 2016",
-          "date": "2026-Q1",
+          "id": "stat-wa-1",
+          "label": "Tägliche Nutzung",
+          "date": "2026-01-25",
           "type": "existing",
-          "tint": false
+          "flipLabel": false
         },
         {
-          "id": "station-c62jxz",
-          "label": "Office 2021",
-          "date": "2026-Q2",
+          "id": "stat-wa-2",
+          "label": "Kontakte vorwarnen",
+          "date": "2026-03-29",
           "type": "milestone"
         },
         {
-          "id": "mso-365",
-          "label": "Office 365",
-          "date": "2026-10-14",
+          "id": "stat-wa-3",
+          "label": "Finaler Wechsel",
+          "date": "2026-05-31",
           "type": "transfer",
+          "transferTo": "stat-sig-3",
+          "description": "Siehe [Wechselrezept WhatsApp zu Signal](https://di.day/de/wechselrezepte).",
           "tint": true
         },
         {
-          "id": "station-k1th66",
-          "label": "Power-User",
-          "date": "2027-Q1",
+          "id": "station-t8n7mu",
+          "label": "KiTa Chat :-(",
+          "date": "2026-12",
           "type": "milestone"
         }
       ]
     },
     {
-      "id": "exchange",
-      "label": "MS Exchange",
-      "color": "#d10000",
-      "zone": "exchange",
+      "id": "line-sig",
+      "label": "Signal",
+      "color": "#00A0E2",
+      "zone": "zone-comm",
       "stations": [
         {
-          "id": "ex-2019",
-          "label": "Exchange 2019",
-          "date": "2026-Q1",
-          "type": "existing",
+          "id": "stat-sig-1",
+          "label": "Signal installieren",
+          "date": "2026-02-22",
+          "type": "start",
+          "isStop": false,
+          "tint": true
+        },
+        {
+          "id": "stat-sig-2",
+          "label": "Gruppen parallel aufbauen",
+          "date": "2026-04-26",
+          "type": "milestone",
+          "relations": [
+            {
+              "kind": "dependsOn",
+              "target": "stat-wa-2",
+              "label": "Nach Vorwarnung"
+            }
+          ],
+          "flipLabel": true,
+          "tint": true,
+          "isStop": true
+        },
+        {
+          "id": "stat-sig-3",
+          "label": "Ausschließliche Nutzung",
+          "date": "2026-05-31",
+          "type": "transfer"
+        },
+        {
+          "id": "stat-sig-4",
+          "label": "Komplett umgezogen",
+          "date": "2026-07-26",
+          "type": "milestone",
+          "tint": false,
+          "isStop": false,
+          "flipLabel": false
+        },
+        {
+          "id": "station-sqg8ux",
+          "label": "Regelbetrieb",
+          "date": "2026-12",
+          "type": "terminus"
+        }
+      ]
+    },
+    {
+      "id": "line-gmaps",
+      "label": "Big-Tech-Karten",
+      "color": "#EE7623",
+      "zone": "zone-5nkit1",
+      "stations": [
+        {
+          "id": "stat-gmaps-1",
+          "label": "Google Maps / Apple Maps",
+          "date": "2026-01-25",
+          "type": "existing"
+        },
+        {
+          "id": "stat-gmaps-2",
+          "label": "Nur noch als Fallback",
+          "date": "2026-05-31",
+          "type": "milestone",
+          "tint": true
+        },
+        {
+          "id": "stat-gmaps-3",
+          "label": "Deinstallation / Deaktivierung",
+          "date": "2026-08-30",
+          "type": "transfer",
+          "transferTo": "stat-osm-3",
+          "description": "Siehe [Wechselrezept Big-Tech-Karten zu Open Street Map](https://di.day/de/wechselrezepte)."
+        }
+      ]
+    },
+    {
+      "id": "line-osm",
+      "label": "Open Street Map",
+      "color": "#FFD300",
+      "zone": "zone-5nkit1",
+      "stations": [
+        {
+          "id": "stat-osm-1",
+          "label": "Apps testen",
+          "date": "2026-03-29",
+          "type": "start",
+          "description": "(z.B. Organic Maps)",
+          "tint": true
+        },
+        {
+          "id": "stat-osm-2",
+          "label": "Erste Navigationen",
+          "date": "2026-05-31",
+          "type": "milestone",
+          "flipLabel": false,
+          "relations": [
+            {
+              "kind": "synchronizedWith",
+              "target": "stat-gmaps-2",
+              "label": "Schleichender Übergang"
+            }
+          ]
+        },
+        {
+          "id": "stat-osm-3",
+          "label": "Vollständiger Wechsel",
+          "date": "2026-08-30",
+          "type": "transfer"
+        },
+        {
+          "id": "stat-osm-4",
+          "label": "Regelbetrieb",
+          "date": "2026-12",
+          "type": "terminus",
           "isStop": false
-        },
-        {
-          "id": "station-te12qy",
-          "label": "Vertragskündigung",
-          "date": "2026-05-31",
-          "type": "milestone",
-          "tint": false
-        },
-        {
-          "id": "station-ampdbc",
-          "label": "Nutzungsende",
-          "date": "2026-07-31",
-          "type": "transfer",
-          "isStop": false,
-          "tint": true,
-          "transferTo": "station-z7ngmi"
-        },
-        {
-          "id": "station-xdxdud",
-          "label": "Vertragsende",
-          "date": "2026-08-31",
-          "type": "terminus",
-          "tint": true,
-          "isStop": true
         }
       ]
     },
     {
-      "id": "openxchange",
-      "label": "Outlook (Client)",
-      "color": "#4f59ee",
-      "zone": "groupware",
+      "id": "line-ms",
+      "label": "Microsoft Office",
+      "color": "#007229",
+      "zone": "zone-office",
       "stations": [
         {
-          "id": "ox-start",
-          "label": "Outlook 2016",
-          "date": "2026-Q1",
+          "id": "stat-ms-1",
+          "label": "MS Office 365 Abo",
+          "date": "2026-01-25",
           "type": "existing"
         },
         {
-          "id": "station-7rortj",
-          "label": "Outlook 2021",
-          "date": "2026-04-01",
-          "type": "milestone"
-        },
-        {
-          "id": "ox-mig",
-          "label": "Nutzungsende",
-          "date": "2026-08-01",
-          "type": "transfer",
-          "tint": true,
-          "isStop": false,
-          "transferTo": "station-2mpmlv"
-        }
-      ]
-    },
-    {
-      "id": "line-ktu7gh",
-      "label": "Redexport",
-      "color": "#11a22e",
-      "zone": "filecloud",
-      "stations": [
-        {
-          "id": "station-hf5ife",
-          "label": "Windows Netzlaufwerk",
-          "date": "2026-Q1",
-          "type": "existing"
-        },
-        {
-          "id": "station-920u37",
-          "label": "Mapping Dateicloud",
-          "date": "2027-Q2",
-          "type": "milestone"
-        },
-        {
-          "id": "station-c59pys",
-          "label": "Regelbetrieb mit Sync Dateicloud",
-          "date": "2027-Q3",
-          "type": "milestone"
-        }
-      ]
-    },
-    {
-      "id": "line-o0tq9e",
-      "label": "Open-Exchange",
-      "color": "#0da00f",
-      "zone": "exchange",
-      "stations": [
-        {
-          "id": "station-bzczvp",
-          "label": "Ausschreibungsvorbereitung",
-          "date": "2026-04-01",
+          "id": "stat-ms-2",
+          "label": "Vorlagen sichten",
+          "date": "2026-04-26",
           "type": "milestone",
-          "tint": true,
-          "description": "- Leistungsverzeichnisses und Ausschreibungsvorbereitung\n- bei sehr straffer Bearbeitung etwa 2 Wochen",
-          "isStop": true
-        },
-        {
-          "id": "station-agazqp",
-          "label": "Veröffentlichung",
-          "date": "2026-04-15",
-          "type": "milestone",
-          "isStop": false,
           "tint": true
         },
         {
-          "id": "station-el19sf",
-          "label": "Zuschlagerteilung / Start Migration",
-          "date": "2026-06-01",
-          "type": "milestone",
-          "isStop": false,
-          "tint": true
-        },
-        {
-          "id": "station-z7ngmi",
-          "label": "Produktivbetrieb",
-          "date": "2026-07-31",
+          "id": "stat-ms-3",
+          "label": "Abo kündigen",
+          "date": "2026-07-26",
           "type": "transfer",
-          "transferTo": "station-ampdbc"
-        },
-        {
-          "id": "station-gqiy56",
-          "label": "Regelbetrieb",
-          "date": "2027-Q1",
-          "type": "milestone"
+          "transferTo": "stat-libre-3",
+          "description": "Siehe [Wechselrezept Microsoft zu Libre Office & Co.](https://di.day/de/wechselrezepte)."
         }
       ]
     },
     {
-      "id": "libreoffice",
-      "label": "LibreOffice (lokal)",
-      "color": "#18A303",
-      "zone": "office",
+      "id": "line-libre",
+      "label": "LibreOffice",
+      "color": "#6CBE45",
+      "zone": "zone-office",
       "stations": [
         {
-          "id": "lo-pilot",
-          "label": "Freiwillige Testphase",
-          "date": "2026-Q2",
+          "id": "stat-libre-1",
+          "label": "Parallele Installation",
+          "date": "2026-02-22",
           "type": "start",
           "tint": true
         },
         {
-          "id": "station-3cid66",
-          "label": "lfd. Evaluation",
-          "date": "2026-Q3",
+          "id": "stat-libre-2",
+          "label": "Vorlagen übertragen",
+          "date": "2026-04-26",
           "type": "milestone",
-          "tint": true
+          "relations": [
+            {
+              "kind": "synchronizedWith",
+              "target": "stat-ms-2",
+              "label": "Migrationsphase"
+            }
+          ]
         },
         {
-          "id": "station-skrrni",
-          "label": "Migrationsphase",
-          "date": "2026-09-01",
-          "type": "milestone"
-        },
-        {
-          "id": "libreoffice-start2",
-          "label": "Teilmigration",
-          "date": "2026-10-14",
-          "type": "transfer",
-          "transferTo": "mso-365",
-          "isStop": true
-        },
-        {
-          "id": "lo-stable",
-          "label": "Standard-User",
-          "date": "2027-Q1",
-          "type": "milestone"
-        }
-      ]
-    },
-    {
-      "id": "line-6ny7zp",
-      "label": "VÖBB Dateicloud (OpenCloud)",
-      "color": "#b313be",
-      "zone": "filecloud",
-      "stations": [
-        {
-          "id": "station-8r1mki",
-          "label": "Probe-Echtbetrieb",
-          "date": "2026-Q3",
-          "type": "milestone",
-          "tint": true
-        },
-        {
-          "id": "station-5628wy",
-          "label": "Zwischenbericht",
-          "date": "2026-11-15",
-          "type": "transfer",
-          "transferTo": "station-2e7qc0",
-          "tint": true
-        },
-        {
-          "id": "station-z7y2t4",
-          "label": "Start Regelbetrieb",
-          "date": "2027-Q1",
-          "type": "milestone",
-          "flipLabel": true
-        },
-        {
-          "id": "station-c03xi8",
-          "label": "Regelbetrieb",
-          "date": "2027-Q3",
-          "type": "milestone"
-        }
-      ]
-    },
-    {
-      "id": "line-u7ii50",
-      "label": "Collabora Online (Web)",
-      "color": "#8f36b0",
-      "zone": "filecloud",
-      "stations": [
-        {
-          "id": "station-nwwyjh",
-          "label": "Probe-Echtbetrieb VÖBB",
-          "date": "2026-Q3",
-          "type": "milestone",
-          "tint": true
-        },
-        {
-          "id": "station-m4kqby",
-          "label": "Start Regelbetrieb",
-          "date": "2027-Q1",
-          "type": "milestone",
-          "flipLabel": true
-        },
-        {
-          "id": "station-ic3s6j",
-          "label": "Regelbetrieb",
-          "date": "2027-Q2",
-          "type": "milestone"
-        }
-      ]
-    },
-    {
-      "id": "line-bckkol",
-      "label": "ZLB Dateicloud (tba)",
-      "color": "#00b8b5",
-      "zone": "filecloud",
-      "stations": [
-        {
-          "id": "station-2e7qc0",
-          "label": "Evaluation",
-          "date": "2026-11-15",
-          "type": "transfer",
-          "tint": true
-        },
-        {
-          "id": "station-mewbu8",
-          "label": "Ausschreibung",
-          "date": "2027-01-15",
-          "type": "milestone",
-          "tint": true
-        },
-        {
-          "id": "station-gond02",
-          "label": "Start Regelbetrieb",
-          "date": "2027-Q2",
+          "id": "stat-libre-3",
+          "label": "Alleinige Nutzung",
+          "date": "2026-07-26",
           "type": "transfer"
         },
         {
-          "id": "station-e4cxkk",
-          "label": "Regelbetrieb",
-          "date": "2027-Q3",
-          "type": "milestone"
-        }
-      ]
-    },
-    {
-      "id": "line-vo5j0x",
-      "label": "Remote Desktop",
-      "color": "#71367d",
-      "zone": "mobil",
-      "stations": [
-        {
-          "id": "station-6xnlhe",
-          "label": "RDP-Client",
-          "date": "2026-Q1",
-          "type": "existing"
-        },
-        {
-          "id": "station-f3bisn",
-          "label": "Abschaltung",
-          "date": "2027-Q2",
+          "id": "stat-libre-4",
+          "label": "Workflows etabliert",
+          "date": "2026-12",
           "type": "terminus",
-          "transferTo": "station-gond02"
-        }
-      ]
-    },
-    {
-      "id": "line-o2t3ua",
-      "label": "VPN",
-      "color": "#e265ae",
-      "zone": "mobil",
-      "stations": [
-        {
-          "id": "station-89p2qc",
-          "label": "VPN (ITDZ)",
-          "date": "2026-Q1",
-          "type": "existing"
-        },
-        {
-          "id": "station-1nswbg",
-          "label": "VPN (ZLB)",
-          "date": "2027-Q1",
-          "type": "milestone"
-        },
-        {
-          "id": "station-n8cb4b",
-          "label": "Regelbetrieb",
-          "date": "2027-Q3",
-          "type": "milestone"
-        }
-      ]
-    },
-    {
-      "id": "line-3r3863",
-      "label": "Webfrontend",
-      "color": "#004e8a",
-      "zone": "groupware",
-      "stations": [
-        {
-          "id": "station-5nunu6",
-          "label": "Nutzungsvorbereitung",
-          "date": "2026-06-01",
-          "type": "milestone",
           "tint": true
-        },
-        {
-          "id": "station-mga4zq",
-          "label": "Schulungen",
-          "date": "2026-07-15",
-          "type": "milestone",
-          "tint": true,
-          "isStop": true
-        },
-        {
-          "id": "station-2mpmlv",
-          "label": "Go-Live",
-          "date": "2026-08-01",
-          "type": "transfer"
-        },
-        {
-          "id": "station-o4jk02",
-          "label": "Regelbetrieb",
-          "date": "2027-Q1",
-          "type": "milestone"
         }
       ]
     },
     {
-      "id": "line-jtwyfs",
-      "label": "Thunderbird (Client)",
-      "color": "#19b9e1",
-      "zone": "groupware",
+      "id": "line-win",
+      "label": "Windows",
+      "color": "#00AFAD",
+      "zone": "zone-office",
       "stations": [
         {
-          "id": "station-bhswlp",
-          "label": "Lobbyarbeit",
-          "date": "2026-Q4",
-          "type": "milestone",
-          "tint": true
+          "id": "stat-win-1",
+          "label": "Windows 11",
+          "date": "2026-01-25",
+          "type": "existing",
+          "flipLabel": true
         },
         {
-          "id": "station-7c7j7p",
-          "label": "Freischaltung durch ITDZ",
-          "date": "2027-Q1",
-          "type": "milestone"
-        }
-      ]
-    },
-    {
-      "id": "line-cdoe29",
-      "label": "Linie 100",
-      "color": "#9d06b1",
-      "zone": "zone-85cjcn",
-      "stations": [
-        {
-          "id": "station-dvvaj5",
-          "label": "Abschaltung Blackberry",
-          "date": "2026-08-01",
+          "id": "stat-win-2",
+          "label": "Backup 1",
+          "date": "2026-06-28",
           "type": "milestone",
           "flipLabel": true
         },
         {
-          "id": "station-g2m1fy",
-          "label": "Online-Office",
-          "date": "2026-Q3",
-          "type": "milestone"
+          "id": "stat-win-3",
+          "label": "Vollständiges Backup",
+          "date": "2026-09-27",
+          "type": "milestone",
+          "flipLabel": true
         },
         {
-          "id": "station-s39eiq",
-          "label": "Abschaltung Remote Desktop",
-          "date": "2027-Q2",
-          "type": "milestone"
-        },
-        {
-          "id": "station-h30hcr",
-          "label": "Stabiles VPN",
-          "date": "2027-Q1",
-          "type": "milestone"
+          "id": "stat-win-4",
+          "label": "Platt machen",
+          "date": "2026-11-29",
+          "type": "transfer",
+          "transferTo": "stat-lin-3",
+          "description": "Siehe [Wechselrezept Windows zu Linux Mint](https://di.day/de/wechselrezepte)."
         }
       ]
-    }
-  ],
-  "events": [
-    {
-      "id": "event-mpmnuz",
-      "label": "EoS MS Exchange 2019 ESU des ITDZ",
-      "date": "2026-04-14"
     },
     {
-      "id": "event-6goc80",
-      "label": "EoL Office 2021 Lizenzen der ZLB",
-      "date": "2026-10-13"
+      "id": "line-lin",
+      "label": "Linux",
+      "color": "#76D0BD",
+      "zone": "zone-office",
+      "stations": [
+        {
+          "id": "stat-lin-1",
+          "label": "Live-USB Stick erstellen",
+          "date": "2026-07-26",
+          "type": "start",
+          "relations": [
+            {
+              "kind": "dependsOn",
+              "target": "stat-win-2",
+              "label": "Grunddaten gesichert"
+            }
+          ]
+        },
+        {
+          "id": "stat-lin-2",
+          "label": "Hardware im Live-Modus testen",
+          "date": "2026-08-30",
+          "type": "milestone",
+          "isStop": true,
+          "flipLabel": true
+        },
+        {
+          "id": "stat-lin-3",
+          "label": "Linux installieren",
+          "date": "2026-11-29",
+          "type": "transfer"
+        }
+      ]
+    },
+    {
+      "id": "line-x",
+      "label": "X (Twitter)",
+      "color": "#7B208B",
+      "zone": "zone-social",
+      "stations": [
+        {
+          "id": "stat-x-1",
+          "label": "Tägliche X-Nutzung",
+          "date": "2026-01-25",
+          "type": "existing"
+        },
+        {
+          "id": "stat-x-2",
+          "label": "Archiv anfordern",
+          "date": "2026-02-22",
+          "type": "milestone"
+        },
+        {
+          "id": "stat-x-3",
+          "label": "Account stilllegen & Verweis",
+          "date": "2026-04-26",
+          "type": "transfer",
+          "transferTo": "stat-mas-3",
+          "description": "Siehe [Wechselrezept X zu Mastodon](https://di.day/de/wechselrezepte/mastodon)."
+        }
+      ]
+    },
+    {
+      "id": "line-insta",
+      "label": "Instagram",
+      "color": "#9B0056",
+      "zone": "zone-social",
+      "stations": [
+        {
+          "id": "stat-insta-1",
+          "label": "Instagram Abo",
+          "date": "2026-01-25",
+          "type": "existing"
+        },
+        {
+          "id": "stat-insta-2",
+          "label": "Wechsel zu Pixelfed / Mastodon",
+          "date": "2026-06-28",
+          "type": "transfer",
+          "transferTo": "stat-mas-5",
+          "description": "Die Bilder der Walled Gardens ins freie Fediverse migrieren."
+        }
+      ]
+    },
+    {
+      "id": "line-mas",
+      "label": "Mastodon & Fediverse",
+      "color": "#9364CC",
+      "zone": "zone-social",
+      "stations": [
+        {
+          "id": "stat-mas-1",
+          "label": "Serverwahl (Instanz suchen)",
+          "date": "2026-02-22",
+          "type": "start",
+          "tint": true
+        },
+        {
+          "id": "stat-mas-2",
+          "label": "Konto erstellen",
+          "date": "2026-02-29",
+          "type": "milestone",
+          "isStop": true,
+          "flipLabel": true
+        },
+        {
+          "id": "stat-mas-3",
+          "label": "Alte X-Kontakte finden",
+          "date": "2026-04-26",
+          "type": "transfer"
+        },
+        {
+          "id": "stat-mas-4",
+          "label": "Vorstellung (#Neuhier)",
+          "date": "2026-05-31",
+          "type": "milestone",
+          "flipLabel": true
+        },
+        {
+          "id": "stat-mas-5",
+          "label": "Bilder aus Instagram übernehmen",
+          "date": "2026-06-28",
+          "type": "transfer",
+          "isStop": true
+        },
+        {
+          "id": "stat-mas-6",
+          "label": "Werbefreie Timeline",
+          "date": "2026-12",
+          "type": "terminus",
+          "tint": true,
+          "flipLabel": true
+        }
+      ]
     }
   ]
 }
