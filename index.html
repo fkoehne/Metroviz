@@ -439,13 +439,13 @@
     </main>
     <footer class="site-footer" role="contentinfo">
         <p class="site-footer-inner">
-            <span x-text="$store.i18n.t('footer.copyright')"></span>
-            <span class="site-footer-sep" aria-hidden="true">·</span>
+            <span class="hide-mobile" x-text="$store.i18n.t('footer.copyright')"></span>
+            <span class="site-footer-sep hide-mobile" aria-hidden="true">·</span>
             <a href="https://chaos.social/@rstockm" class="site-footer-link" rel="me noopener noreferrer" target="_blank" :title="$store.i18n.t('footer.mastodonTitle')">@rstockm@chaos.social</a>
             <span class="site-footer-sep" aria-hidden="true">·</span>
             <a href="https://github.com/rstockm/Metroviz" class="site-footer-link" rel="noopener noreferrer" target="_blank" :title="$store.i18n.t('footer.githubTitle')">GitHub</a>
-            <span class="site-footer-sep" aria-hidden="true">·</span>
-            <a href="LICENSE" class="site-footer-link" :title="$store.i18n.t('footer.licenseTitle')" x-text="$store.i18n.t('footer.license')"></a>
+            <span class="site-footer-sep hide-mobile" aria-hidden="true">·</span>
+            <a href="LICENSE" class="site-footer-link hide-mobile" :title="$store.i18n.t('footer.licenseTitle')" x-text="$store.i18n.t('footer.license')"></a>
         </p>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/i18next@23/i18next.min.js"></script>

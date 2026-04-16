@@ -913,11 +913,7 @@ input[type="text"]:focus, select:focus {
     .logo-icon {
         margin-right: 0;
     }
-    .site-footer-inner {
-        flex-direction: column;
-        gap: 0.4rem;
-    }
-    .site-footer-sep {
-        display: none;
+    .hide-mobile {
+        display: none !important;
     }
 }
