@@ -18,7 +18,7 @@ There is **no need to clone the repository, run a local web server, or install a
 
 **Save** keeps data in **local storage on that device/browser only** (nothing is uploaded). **Share** copies a URL that **embeds your entire roadmap** (compressed JSON), not just a link to the app; open it elsewhere to restore the same map. To use the same data on another computer, either **Share** the URL to yourself (email, notes, chat) or **export JSON** and import it there.
 
-## 🌟 Key Features
+## Key Features
 
 * **Visual Metro Map Rendering:** Automatically routes lines and avoids label collisions using D3.js.
 * **Dual Views:** Switch seamlessly between the visual Metro Map and a structured **Markdown (Text) View**. Both views update in real-time.
@@ -36,7 +36,7 @@ There is **no need to clone the repository, run a local web server, or install a
 
 ---
 
-## 💾 Save vs. Share (and other devices)
+## Save vs. Share (and other devices)
 
 | Action | What it does |
 |--------|----------------|
@@ -46,7 +46,7 @@ There is **no need to clone the repository, run a local web server, or install a
 
 ---
 
-## 📚 Core Concepts & Data Model
+## Core Concepts & Data Model
 
 MetroViz relies on a structured JSON data model. Here are the core concepts you will find in the editor:
 
@@ -74,7 +74,7 @@ MetroViz relies on a structured JSON data model. Here are the core concepts you 
 
 ---
 
-## 🛠️ Tech Stack & Dependencies
+## Tech Stack & Dependencies
 
 MetroViz is built as a modern, lightweight, serverless Single Page Application (SPA). It uses vanilla ES6 modules and relies on external libraries loaded via CDN:
 
@@ -88,7 +88,7 @@ MetroViz is built as a modern, lightweight, serverless Single Page Application (
 
 ---
 
-## 🚀 How to Run Locally
+## How to Run Locally
 
 Since MetroViz uses ES6 modules (`type="module"`), you cannot simply open the `index.html` file from your local filesystem using `file://`. You must serve it via a local web server.
 
@@ -102,7 +102,7 @@ Since MetroViz uses ES6 modules (`type="module"`), you cannot simply open the `i
 
 ---
 
-## 📦 Export Options Explained
+## Export Options Explained
 
 MetroViz provides several ways to extract your data via the "Export" menu:
 
@@ -114,7 +114,7 @@ MetroViz provides several ways to extract your data via the "Export" menu:
 
 ---
 
-## 🌍 Contributing: How to Add a New Language
+## Contributing: How to Add a New Language
 
 MetroViz supports internationalization (i18n). The UI, the Markdown export, and map labels (like "Today") adapt dynamically. 
 
