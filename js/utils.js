@@ -96,6 +96,12 @@ export function parseDate(dateStr, emptyBehavior = 'null') {
         return new Date(year, month, 1);
     }
     
+    // Robust parsing for strict YYYY-MM-DD (fixes issues in older Safari/iOS versions)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        const parts = dateStr.split('-');
+        return new Date(parts[0], parseInt(parts[1], 10) - 1, parts[2]);
+    }
+    
     const date = new Date(dateStr);
     if (emptyBehavior === 'throw' && isNaN(date.getTime())) {
         throw new Error(`Invalid date format: ${dateStr}`);
