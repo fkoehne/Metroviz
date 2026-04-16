@@ -135,5 +135,12 @@
     "zone": "Zone",
     "noLines": "No work packages in this area",
     "noStations": "No milestones"
+  },
+  "footer": {
+    "copyright": "© 2026 Ralf Stockmann",
+    "mastodonTitle": "Ralf Stockmann on Mastodon",
+    "githubTitle": "MetroViz source repository",
+    "licenseTitle": "MIT License (full text)",
+    "license": "MIT License"
   }
 }

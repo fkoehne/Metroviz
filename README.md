@@ -8,6 +8,14 @@ MetroViz is a highly interactive, client-side web application for creating, edit
 
 By representing workstreams or technologies as "Lines" and milestones as "Stations," MetroViz makes complex timelines and dependencies instantly understandable. It also features a dual-view approach, offering both the graphical map and a fully synchronized Markdown/Text version of the roadmap.
 
+## Use it online (no installation)
+
+You can **create and edit your own roadmaps right in the browser** using the public instance hosted on **GitHub Pages**:
+
+**[https://rstockm.github.io/Metroviz/](https://rstockm.github.io/Metroviz/)**
+
+There is **no need to clone the repository, run a local web server, or install any dependencies**. Open the link, use the editor (visual or JSON tab), save to your browser’s local storage, export as JSON/Markdown/images, or share a compressed link—all client-side. Running MetroViz locally is optional and only needed if you want to hack on the source code or work fully offline.
+
 ## 🌟 Key Features
 
 * **Visual Metro Map Rendering:** Automatically routes lines and avoids label collisions using D3.js.
@@ -124,6 +132,14 @@ We welcome Pull Requests (PRs) for new languages! Here is how you can add one:
    ```
 4. **Test locally & Submit a PR:**
    Run the app locally to ensure your language loads correctly when selected. Once verified, commit your changes and open a Pull Request on GitHub.
+
+---
+
+## License
+
+MetroViz is released under the [MIT License](LICENSE).
+
+Copyright © 2026 Ralf Stockmann.
 
 ---
 

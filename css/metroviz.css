@@ -46,6 +46,41 @@ main {
     position: relative;
     overflow: hidden;
     display: flex;
+    min-height: 0;
+}
+
+.site-footer {
+    flex-shrink: 0;
+    background: #000;
+    color: #999;
+    border-top: 1px solid #333;
+    padding: 0.5rem 1rem;
+    font-size: 12px;
+    text-align: center;
+}
+
+.site-footer-inner {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem 0.5rem;
+}
+
+.site-footer-link {
+    color: #bbb;
+    text-decoration: none;
+}
+
+.site-footer-link:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.site-footer-sep {
+    color: #555;
+    user-select: none;
 }
 
 #editor-container {

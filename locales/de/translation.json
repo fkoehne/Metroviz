@@ -135,5 +135,12 @@
     "zone": "Themenbereich",
     "noLines": "Keine Arbeitspakete in diesem Bereich",
     "noStations": "Keine Meilensteine"
+  },
+  "footer": {
+    "copyright": "© 2026 Ralf Stockmann",
+    "mastodonTitle": "Ralf Stockmann im Fediverse",
+    "githubTitle": "MetroViz-Quellcode auf GitHub",
+    "licenseTitle": "MIT-Lizenz (vollständiger Text)",
+    "license": "MIT-Lizenz"
   }
 }
