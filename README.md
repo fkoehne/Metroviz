@@ -2,6 +2,10 @@
 
 MetroViz is a highly interactive, client-side web application for creating, editing, and sharing technology roadmaps, project plans, and migrations in the visual style of a **Metro Map (Subway Map)**. 
 
+<img width="2792" height="1404" alt="image" src="https://github.com/user-attachments/assets/4dbca948-92e0-48d6-b023-6043bc9a5c76" />
+
+[Demo](https://rstockm.github.io/Metroviz/?editor=0&view=map&lang=en&zstate=12)
+
 By representing workstreams or technologies as "Lines" and milestones as "Stations," MetroViz makes complex timelines and dependencies instantly understandable. It also features a dual-view approach, offering both the graphical map and a fully synchronized Markdown/Text version of the roadmap.
 
 ## 🌟 Key Features
