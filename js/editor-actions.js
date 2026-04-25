@@ -1,4 +1,5 @@
 import { parseDate } from './utils.js';
+import { sortPaletteRainbow, METRO_PALETTE_BASE } from './color-utils.js';
 
 export const editorActions = {
     // Intent: Array mutations (like .push() and .splice()) are used extensively in this object.
@@ -32,6 +33,81 @@ export const editorActions = {
      */
     colorInMetroPalette(hex) {
         return this.metroPalette.some((c) => this.paletteColorsEqual(c, hex));
+    },
+
+    /**
+     * Returns true if the given string is a valid 6-digit hex color (e.g. "#FF0000").
+     * @param {string} hex - The string to validate.
+     * @returns {boolean}
+     */
+    isValidHex(hex) {
+        return /^#[0-9a-fA-F]{6}$/.test((hex || '').trim());
+    },
+
+    /**
+     * Returns true if the given hex color was added by the user (not part of the base palette).
+     * @param {string} hex - The color to check.
+     * @returns {boolean}
+     */
+    isCustomPaletteColor(hex) {
+        return this.customPaletteColors.some((c) => this.paletteColorsEqual(c, hex));
+    },
+
+    /**
+     * Loads the user's custom palette additions from localStorage and merges them into metroPalette.
+     */
+    loadCustomPalette() {
+        try {
+            const saved = localStorage.getItem('metroviz_custom_palette');
+            if (saved) {
+                const colors = JSON.parse(saved);
+                if (Array.isArray(colors)) {
+                    this.customPaletteColors = colors.filter((c) => this.isValidHex(c));
+                    this.metroPalette = sortPaletteRainbow([...METRO_PALETTE_BASE, ...this.customPaletteColors]);
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to load custom palette from localStorage:', e);
+        }
+    },
+
+    /**
+     * Persists the current custom palette additions to localStorage.
+     */
+    saveCustomPalette() {
+        try {
+            localStorage.setItem('metroviz_custom_palette', JSON.stringify(this.customPaletteColors));
+        } catch (e) {
+            console.error('Failed to save custom palette to localStorage:', e);
+        }
+    },
+
+    /**
+     * Adds a hex color to the user's custom palette, rebuilds and sorts metroPalette, then persists.
+     * @param {string} hex - The hex color string to add (e.g. "#FF0000").
+     * @returns {boolean} True if the color was added, false if invalid or already present.
+     */
+    addColorToPalette(hex) {
+        const normalized = (hex || '').trim().toUpperCase();
+        if (!this.isValidHex(normalized)) return false;
+        if (this.metroPalette.some((c) => this.paletteColorsEqual(c, normalized))) return false;
+        this.customPaletteColors.push(normalized);
+        this.metroPalette = sortPaletteRainbow([...METRO_PALETTE_BASE, ...this.customPaletteColors]);
+        this.saveCustomPalette();
+        return true;
+    },
+
+    /**
+     * Removes a user-added hex color from the custom palette, rebuilds metroPalette, then persists.
+     * Has no effect if the color is not a user-added color.
+     * @param {string} hex - The hex color string to remove.
+     */
+    removeCustomPaletteColor(hex) {
+        const idx = this.customPaletteColors.findIndex((c) => this.paletteColorsEqual(c, hex));
+        if (idx === -1) return;
+        this.customPaletteColors.splice(idx, 1);
+        this.metroPalette = sortPaletteRainbow([...METRO_PALETTE_BASE, ...this.customPaletteColors]);
+        this.saveCustomPalette();
     },
 
     /**

@@ -85,6 +85,8 @@ class App {
                 _dialogResolve: null,
                 /** 30 Metro map colors, sorted by rainbow (HSV hue) */
                 metroPalette: sortPaletteRainbow(METRO_PALETTE_BASE),
+                /** User-added custom palette colors, persisted to localStorage */
+                customPaletteColors: [],
 
                 data: {
                     meta: { title: '', organization: '' },
@@ -105,6 +107,7 @@ class App {
                     await i18nPromise;
 
                     this.loadIndex();
+                    this.loadCustomPalette();
                     this.parseUrlParams();
 
                     let loaded = false;

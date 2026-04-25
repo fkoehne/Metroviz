@@ -260,7 +260,7 @@
                                             <label x-text="$store.i18n.t('editor.id')">ID</label>
                                             <input type="text" x-model="zone.id">
                                         </div>
-                                        <div class="form-group metro-color-field" x-data="{ paletteOpen: false }" @click.outside="paletteOpen = false">
+                                        <div class="form-group metro-color-field" x-data="{ paletteOpen: false, hexInput: '' }" @click.outside="paletteOpen = false">
                                             <label x-text="$store.i18n.t('editor.color')">Farbe</label>
                                             <button type="button" x-ref="metroPaletteTrigger" class="metro-color-trigger" :style="'background-color:' + (zone.color || '#cccccc')" @click.stop="paletteOpen = !paletteOpen; if (paletteOpen) $nextTick(() => $nextTick(() => window.metrovizPositionPalette($refs.metroPaletteTrigger, $refs.metroPaletteMenu)))" :aria-expanded="paletteOpen" :title="$store.i18n.t('editor.chooseColor')"></button>
                                             <div class="metro-palette-dropdown" x-ref="metroPaletteMenu" x-show="paletteOpen" x-cloak @click.stop role="group" :aria-label="$store.i18n.t('editor.color') + ': ' + (zone.label || zone.id)">
@@ -269,8 +269,18 @@
                                                         <button type="button" class="metro-swatch metro-swatch--compact metro-swatch--custom metro-swatch--active" :style="'background-color:' + zone.color" :title="$store.i18n.t('editor.currentColorNotInPalette')" tabindex="-1" aria-hidden="true"></button>
                                                     </template>
                                                     <template x-for="c in metroPalette" :key="c">
-                                                        <button type="button" class="metro-swatch metro-swatch--compact" :style="'background-color:' + c" :title="c" :class="{ 'metro-swatch--active': paletteColorsEqual(zone.color, c) }" @click="zone.color = c; paletteOpen = false"></button>
+                                                        <div class="metro-swatch-wrap">
+                                                            <button type="button" class="metro-swatch metro-swatch--compact" :style="'background-color:' + c" :title="c" :class="{ 'metro-swatch--active': paletteColorsEqual(zone.color, c) }" @click="zone.color = c; paletteOpen = false"></button>
+                                                            <button x-show="isCustomPaletteColor(c)" type="button" class="metro-swatch-remove" @click.stop="removeCustomPaletteColor(c)" :title="$store.i18n.t('editor.removeColor')">×</button>
+                                                        </div>
                                                     </template>
+                                                </div>
+                                                <div class="metro-palette-hex-input">
+                                                    <div class="metro-palette-hex-row">
+                                                        <div class="metro-hex-preview" :style="isValidHex(hexInput.trim()) ? 'background-color:' + hexInput.trim() : ''"></div>
+                                                        <input type="text" class="metro-hex-input" x-model="hexInput" :placeholder="$store.i18n.t('editor.hexPlaceholder')" maxlength="7" @keydown.enter="if (addColorToPalette(hexInput.trim())) hexInput = ''">
+                                                        <button type="button" class="btn-small metro-hex-add-btn" :disabled="!isValidHex(hexInput.trim())" @click="if (addColorToPalette(hexInput.trim())) hexInput = ''" x-text="$store.i18n.t('editor.addColor')">+</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -311,7 +321,7 @@
                                             <label x-text="$store.i18n.t('editor.name')">Name</label>
                                             <input type="text" x-model="line.label">
                                         </div>
-                                        <div class="form-group metro-color-field flex-1" x-data="{ paletteOpen: false }" @click.outside="paletteOpen = false">
+                                        <div class="form-group metro-color-field flex-1" x-data="{ paletteOpen: false, hexInput: '' }" @click.outside="paletteOpen = false">
                                             <label x-text="$store.i18n.t('editor.color')">Farbe</label>
                                             <button type="button" x-ref="metroPaletteTrigger" class="metro-color-trigger" :style="'background-color:' + (line.color || '#0078D4')" @click.stop="paletteOpen = !paletteOpen; if (paletteOpen) $nextTick(() => $nextTick(() => window.metrovizPositionPalette($refs.metroPaletteTrigger, $refs.metroPaletteMenu)))" :aria-expanded="paletteOpen" :title="$store.i18n.t('editor.chooseColor')"></button>
                                             <div class="metro-palette-dropdown" x-ref="metroPaletteMenu" x-show="paletteOpen" x-cloak @click.stop role="group" :aria-label="$store.i18n.t('editor.color') + ': ' + (line.label || line.id)">
@@ -320,8 +330,18 @@
                                                         <button type="button" class="metro-swatch metro-swatch--compact metro-swatch--custom metro-swatch--active" :style="'background-color:' + line.color" :title="$store.i18n.t('editor.currentColorNotInPalette')" tabindex="-1" aria-hidden="true"></button>
                                                     </template>
                                                     <template x-for="c in metroPalette" :key="c">
-                                                        <button type="button" class="metro-swatch metro-swatch--compact" :style="'background-color:' + c" :title="c" :class="{ 'metro-swatch--active': paletteColorsEqual(line.color, c) }" @click="line.color = c; paletteOpen = false"></button>
+                                                        <div class="metro-swatch-wrap">
+                                                            <button type="button" class="metro-swatch metro-swatch--compact" :style="'background-color:' + c" :title="c" :class="{ 'metro-swatch--active': paletteColorsEqual(line.color, c) }" @click="line.color = c; paletteOpen = false"></button>
+                                                            <button x-show="isCustomPaletteColor(c)" type="button" class="metro-swatch-remove" @click.stop="removeCustomPaletteColor(c)" :title="$store.i18n.t('editor.removeColor')">×</button>
+                                                        </div>
                                                     </template>
+                                                </div>
+                                                <div class="metro-palette-hex-input">
+                                                    <div class="metro-palette-hex-row">
+                                                        <div class="metro-hex-preview" :style="isValidHex(hexInput.trim()) ? 'background-color:' + hexInput.trim() : ''"></div>
+                                                        <input type="text" class="metro-hex-input" x-model="hexInput" :placeholder="$store.i18n.t('editor.hexPlaceholder')" maxlength="7" @keydown.enter="if (addColorToPalette(hexInput.trim())) hexInput = ''">
+                                                        <button type="button" class="btn-small metro-hex-add-btn" :disabled="!isValidHex(hexInput.trim())" @click="if (addColorToPalette(hexInput.trim())) hexInput = ''" x-text="$store.i18n.t('editor.addColor')">+</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
