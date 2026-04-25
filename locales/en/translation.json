@@ -92,7 +92,10 @@
     "descHide": "Hide description",
     "descEdit": "Edit description",
     "descAdd": "+ Add description",
-    "descPlaceholder": "Markdown description..."
+    "descPlaceholder": "Markdown description...",
+    "addColor": "+",
+    "removeColor": "Remove color",
+    "hexPlaceholder": "#RRGGBB"
   },
   "js": {
     "loadFileError": "Error loading: ",

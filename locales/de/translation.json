@@ -92,7 +92,10 @@
     "descHide": "Beschreibung ausblenden",
     "descEdit": "Beschreibung bearbeiten",
     "descAdd": "+ Beschreibung hinzufügen",
-    "descPlaceholder": "Markdown Beschreibung..."
+    "descPlaceholder": "Markdown Beschreibung...",
+    "addColor": "+",
+    "removeColor": "Farbe entfernen",
+    "hexPlaceholder": "#RRGGBB"
   },
   "js": {
     "loadFileError": "Fehler beim Laden: ",

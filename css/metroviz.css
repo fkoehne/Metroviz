@@ -305,6 +305,92 @@ input[type="text"]:focus, select:focus {
     border-color: rgba(255, 255, 255, 0.35);
 }
 
+/* Wrapper for each palette swatch, needed for the optional remove button */
+.metro-swatch-wrap {
+    position: relative;
+    display: inline-flex;
+}
+
+/* Small ×-button that appears on user-added swatches */
+.metro-swatch-remove {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    font-size: 9px;
+    line-height: 1;
+    background: #c00;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.metro-swatch-remove:hover {
+    background: #e00;
+}
+
+/* Hex color input row at the bottom of the palette dropdown */
+.metro-palette-hex-input {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid #444;
+}
+
+.metro-palette-hex-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Preview square that shows the entered hex color */
+.metro-hex-preview {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    border: 1px solid #555;
+    border-radius: 3px;
+    background-color: #333;
+    box-sizing: border-box;
+}
+
+.metro-hex-input {
+    flex: 1;
+    min-width: 0;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-family: monospace;
+    background: #1e1e1e;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    border-radius: 4px;
+    height: 26px;
+    box-sizing: border-box;
+}
+
+.metro-hex-input:focus {
+    outline: none;
+    border-color: #0078D4;
+}
+
+.metro-hex-add-btn {
+    flex-shrink: 0;
+    height: 26px;
+    padding: 0 8px;
+}
+
+.metro-hex-add-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .card {
     background: #1e1e1e;
     border: 1px solid #333;
