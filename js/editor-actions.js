@@ -98,10 +98,30 @@ export const editorActions = {
     },
 
     /**
-     * Removes a zone from the data model.
+     * Removes a zone from the data model and reassigns its lines to an adjacent zone.
+     * Lines belonging to the deleted zone are moved to the nearest remaining zone
+     * (the one before if possible, otherwise the one after). If no other zones remain,
+     * the lines' zone field is cleared.
      * @param {number} index - Zone array index.
      */
     removeZone(index) {
+        const removedZoneId = this.data.zones[index].id;
+
+        // Determine which zone to reassign orphaned lines to
+        let replacementZoneId = '';
+        if (this.data.zones.length > 1) {
+            // Prefer the zone before; fall back to the zone after
+            const replacementIndex = index > 0 ? index - 1 : index + 1;
+            replacementZoneId = this.data.zones[replacementIndex].id;
+        }
+
+        // Reassign all lines that belonged to the removed zone
+        this.data.lines.forEach(line => {
+            if (line.zone === removedZoneId) {
+                line.zone = replacementZoneId;
+            }
+        });
+
         this.data.zones.splice(index, 1);
     },
 
