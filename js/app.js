@@ -49,7 +49,7 @@ document.addEventListener('alpine:init', () => {
 });
 
 /**
- * Main Application Controller handling state, UI interactions, and visualization updates.
+ * Haupt-Anwendungs-Controller, der Zustand, UI-Interaktionen und Visualisierungs-Updates steuert.
  */
 class App {
     constructor() {
@@ -62,7 +62,7 @@ class App {
     }
 
     /**
-     * Initializes Alpine.js, defining global data and watching for state changes.
+     * Initialisiert Alpine.js, definiert globale Daten und überwacht Zustandsänderungen.
      */
     initAlpine() {
         document.addEventListener('alpine:init', () => {
@@ -175,10 +175,10 @@ class App {
                     });
                 },
 
-                /**
-                 * Parses the raw JSON string into the Alpine data state and triggers a re-render.
-                 * Includes handling for legacy URL zone state encoding.
-                 */
+    /**
+     * Parst den rohen JSON-String in den Alpine-Datenzustand und löst ein Re-Rendern aus.
+     * Beinhaltet die Behandlung für die alte URL-Zonen-Status-Kodierung.
+     */
                 updateFromJson() {
                     try {
                         if (!this.rawJson.trim()) return;
@@ -208,10 +208,10 @@ class App {
                     }
                 },
 
-                /**
-                 * Re-calculates layout properties and renders the D3 SVG.
-                 * @param {Object} jsonData - The internal state tree representing the roadmap.
-                 */
+    /**
+     * Berechnet Layout-Eigenschaften neu und rendert das D3-SVG.
+     * @param {Object} jsonData - Der interne Zustandsbaum, der die Roadmap repräsentiert.
+     */
                 renderMap(jsonData) {
                     try {
                         // We need to pass a clone to the layout engine to avoid mutation issues
@@ -228,7 +228,7 @@ class App {
     }
 
     /**
-     * Sets up global event listeners, like drag-and-drop for JSON file uploads.
+     * Richtet globale Event-Listener ein, wie z.B. Drag-and-Drop für JSON-Datei-Uploads.
      */
     setupEventListeners() {
         // Drag and drop support

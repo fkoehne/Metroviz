@@ -1,11 +1,11 @@
 import { escapeHtml, sanitizeHtml, parseDate, downloadBlob, sanitizeFilename } from './utils.js';
 
 /**
- * Provides actions to generate and export roadmap data as Markdown.
+ * Stellt Aktionen bereit, um Roadmap-Daten zu generieren und als Markdown zu exportieren.
  */
 export const markdownExportActions = {
     /**
-     * Triggers the download of the current roadmap data as a .md file.
+     * Löst den Download der aktuellen Roadmap-Daten als .md-Datei aus.
      */
     exportMD() {
         const mdStr = this.generateMarkdown();
@@ -15,9 +15,9 @@ export const markdownExportActions = {
     },
 
     /**
-     * Traverses the internal state (zones, lines, stations) and compiles it into a structured Markdown string.
+     * Durchläuft den internen Zustand (Zonen, Linien, Stationen) und kompiliert ihn zu einem strukturierten Markdown-String.
      * 
-     * @returns {string} The generated Markdown content.
+     * @returns {string} Der generierte Markdown-Inhalt.
      */
     generateMarkdown() {
         if (!this.data) return '';
@@ -133,9 +133,9 @@ export const markdownExportActions = {
     },
 
     /**
-     * Parses the generated Markdown into sanitized HTML for preview rendering.
+     * Parst das generierte Markdown in sanitisiertes HTML für das Preview-Rendering.
      * 
-     * @returns {string} The HTML representation of the markdown.
+     * @returns {string} Die HTML-Repräsentation des Markdowns.
      */
     renderMarkdown() {
         const md = this.generateMarkdown();

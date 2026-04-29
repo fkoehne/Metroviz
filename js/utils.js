@@ -1,8 +1,8 @@
 /**
- * Escapes HTML characters in a string to prevent XSS attacks when injecting into the DOM.
+ * Maskiert HTML-Zeichen in einem String, um XSS-Angriffe bei der Injektion ins DOM zu verhindern.
  * 
- * @param {string} str - The raw string to escape.
- * @returns {string} The escaped string.
+ * @param {string} str - Der zu maskierende rohe String.
+ * @returns {string} Der maskierte String.
  */
 export function escapeHtml(str) {
     if (!str) return '';
@@ -15,11 +15,11 @@ export function escapeHtml(str) {
 }
 
 /**
- * Sanitizes an HTML string using DOMPurify if available in the global scope.
- * Serves as a graceful fallback when DOMPurify is not loaded.
+ * Bereinigt einen HTML-String mithilfe von DOMPurify, falls global verfügbar.
+ * Dient als Fallback, wenn DOMPurify nicht geladen ist.
  * 
- * @param {string} html - The HTML string to sanitize.
- * @returns {string} The sanitized HTML string.
+ * @param {string} html - Der zu bereinigende HTML-String.
+ * @returns {string} Der bereinigte HTML-String.
  */
 export function sanitizeHtml(html) {
     if (typeof window !== 'undefined' && window.DOMPurify) {
@@ -36,11 +36,11 @@ export function sanitizeHtml(html) {
 }
 
 /**
- * Sanitizes an SVG string to remove potentially malicious elements (like <script> or <foreignObject>)
- * before exporting, ensuring downloaded SVG files are safe.
+ * Bereinigt einen SVG-String, um potenziell bösartige Elemente (wie <script> oder <foreignObject>)
+ * vor dem Export zu entfernen, um sicherzustellen, dass heruntergeladene SVG-Dateien sicher sind.
  * 
- * @param {string} svgString - The raw SVG string.
- * @returns {string} The sanitized SVG string.
+ * @param {string} svgString - Der rohe SVG-String.
+ * @returns {string} Der bereinigte SVG-String.
  */
 export function sanitizeSvg(svgString) {
     if (typeof window !== 'undefined' && window.DOMPurify) {
@@ -58,11 +58,11 @@ export function sanitizeSvg(svgString) {
 }
 
 /**
- * Sanitizes a filename to prevent path traversal and remove potentially dangerous characters.
+ * Bereinigt einen Dateinamen, um Path Traversal zu verhindern und potenziell gefährliche Zeichen zu entfernen.
  * 
- * @param {string} name - The requested filename.
- * @param {string} fallback - The fallback name if the sanitized name is empty.
- * @returns {string} The sanitized filename.
+ * @param {string} name - Der angeforderte Dateiname.
+ * @param {string} fallback - Der Fallback-Name, falls der bereinigte Name leer ist.
+ * @returns {string} Der bereinigte Dateiname.
  */
 export function sanitizeFilename(name, fallback = 'metroviz-roadmap') {
     if (!name) return fallback;
@@ -71,12 +71,12 @@ export function sanitizeFilename(name, fallback = 'metroviz-roadmap') {
 }
 
 /**
- * Parses a date string into a Date object, supporting both standard ISO formats
- * and custom quarter-based formats (e.g., "2023-Q1").
+ * Parst einen Datumsstring in ein Date-Objekt und unterstützt dabei sowohl Standard-ISO-Formate
+ * als auch benutzerdefinierte quartalsbasierte Formate (z. B. "2023-Q1").
  * 
- * @param {string} dateStr - The date string to parse.
- * @param {'null'|'throw'|'now'} [emptyBehavior='null'] - How to handle empty or invalid inputs.
- * @returns {Date|null} The parsed Date object, or null based on emptyBehavior.
+ * @param {string} dateStr - Der zu parsende Datumsstring.
+ * @param {'null'|'throw'|'now'} [emptyBehavior='null'] - Wie mit leeren oder ungültigen Eingaben umgegangen wird.
+ * @returns {Date|null} Das geparste Date-Objekt, oder null abhängig von emptyBehavior.
  */
 export function parseDate(dateStr, emptyBehavior = 'null') {
     if (!dateStr) {
@@ -110,11 +110,11 @@ export function parseDate(dateStr, emptyBehavior = 'null') {
 }
 
 /**
- * Triggers a file download in the browser by generating an ephemeral anchor link.
+ * Löst einen Dateidownload im Browser aus, indem ein temporärer Anker-Link generiert wird.
  * 
- * @param {string|Blob|ArrayBuffer} content - The content to be downloaded.
- * @param {string} mime - The MIME type of the file.
- * @param {string} filename - The target filename.
+ * @param {string|Blob|ArrayBuffer} content - Der herunterzuladende Inhalt.
+ * @param {string} mime - Der MIME-Typ der Datei.
+ * @param {string} filename - Der Ziel-Dateiname.
  */
 export function downloadBlob(content, mime, filename) {
     const blob = new Blob([content], { type: mime });

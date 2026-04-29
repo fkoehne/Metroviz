@@ -1,11 +1,11 @@
 /**
- * Orthogonal path (only horizontal/vertical segments) between two stations.
+ * Orthogonaler Pfad (nur horizontale/vertikale Segmente) zwischen zwei Stationen.
  * 
- * @param {number} sx - Source X coordinate
- * @param {number} sy - Source Y coordinate
- * @param {number} tx - Target X coordinate
- * @param {number} ty - Target Y coordinate
- * @returns {string} SVG path string
+ * @param {number} sx - Quell-X-Koordinate
+ * @param {number} sy - Quell-Y-Koordinate
+ * @param {number} tx - Ziel-X-Koordinate
+ * @param {number} ty - Ziel-Y-Koordinate
+ * @returns {string} SVG-Pfad-String
  */
 function buildOrthogonalRelationPath(sx, sy, tx, ty) {
     const off = 14;
@@ -44,8 +44,8 @@ export function getTintedColor(lineColor, zoneBg) {
 }
 
 /**
- * Renders the metro map visualization using D3.js.
- * Manages the SVG structure, scales, layers, and visual components.
+ * Rendert die Metro-Map-Visualisierung mit D3.js.
+ * Verwaltet die SVG-Struktur, Skalen, Ebenen und visuelle Komponenten.
  */
 export class MetroRenderer {
     constructor(containerSelector) {
@@ -55,11 +55,11 @@ export class MetroRenderer {
     }
 
     /**
-     * Generates a routing path for a metro line.
-     * Introduces sloped segments to transition between stations on different Y coordinates.
+     * Generiert einen Routing-Pfad für eine Metro-Linie.
+     * Führt schräge Segmente ein, um zwischen Stationen auf verschiedenen Y-Koordinaten zu wechseln.
      * 
-     * @param {Array} stations - Array of station objects in the line
-     * @returns {Array} Array of path points with x, y, and lineId
+     * @param {Array} stations - Array von Stationsobjekten in der Linie
+     * @returns {Array} Array von Pfadpunkten mit x, y und lineId
      */
     generateMetroPath(stations) {
         let path = [];
@@ -109,11 +109,11 @@ export class MetroRenderer {
     }
 
     /**
-     * Main rendering method.
-     * Constructs the SVG structure, evaluates element bounding boxes for collision detection,
-     * and delegates rendering to specific layer methods.
+     * Haupt-Rendering-Methode.
+     * Konstruiert die SVG-Struktur, wertet Bounding-Boxes von Elementen für die Kollisionserkennung aus
+     * und delegiert das Rendern an spezifische Ebenen-Methoden.
      * 
-     * @param {Object} layout - Layout data containing config, scales, zones, lines, and events
+     * @param {Object} layout - Layout-Daten mit Konfiguration, Skalen, Zonen, Linien und Events
      */
     render(layout) {
         const { config, xScale, zones, lines } = layout;
@@ -507,11 +507,11 @@ export class MetroRenderer {
     }
 
     /**
-     * Renders orthogonal paths for dependencies and synchronized relationships between stations.
+     * Rendert orthogonale Pfade für Abhängigkeiten und synchronisierte Beziehungen zwischen Stationen.
      * 
-     * @param {d3.Selection} relationsGroup - Group for rendering relation paths
-     * @param {d3.Selection} zoomGroup - Main zoomable group
-     * @param {Array} relationEdges - Edges representing relations
+     * @param {d3.Selection} relationsGroup - Gruppe zum Rendern von Beziehungspfaden
+     * @param {d3.Selection} zoomGroup - Haupt-Zoom-Gruppe
+     * @param {Array} relationEdges - Kanten, die Beziehungen repräsentieren
      */
     renderRelations(relationsGroup, zoomGroup, relationEdges) {
         const renderer = this;
@@ -603,19 +603,19 @@ export class MetroRenderer {
     }
 
     /**
-     * Renders stations and their labels.
-     * Applies collision detection to decide whether a label should be placed above or below the station
-     * to avoid overlapping with lines, other stations, or transfer links.
+     * Rendert Stationen und deren Labels.
+     * Wendet Kollisionserkennung an, um zu entscheiden, ob ein Label oberhalb oder unterhalb der Station
+     * platziert werden soll, um Überlappungen mit Linien, anderen Stationen oder Transfer-Verbindungen zu vermeiden.
      * 
-     * @param {d3.Selection} transferBgGroup - Group for transfer backgrounds
-     * @param {d3.Selection} transferFgGroup - Group for transfer foregrounds
-     * @param {d3.Selection} normalStationsGroup - Group for standard stations
-     * @param {d3.Selection} labelsGroup - Group for labels
-     * @param {Array} visibleLines - Active lines to render
-     * @param {Map} zoneColors - Map of zone background colors
-     * @param {Map} allStations - Map of all station data
-     * @param {Function} addBox - Registers a bounding box
-     * @param {Function} checkCollision - Tests if a box overlaps existing elements
+     * @param {d3.Selection} transferBgGroup - Gruppe für Transfer-Hintergründe
+     * @param {d3.Selection} transferFgGroup - Gruppe für Transfer-Vordergründe
+     * @param {d3.Selection} normalStationsGroup - Gruppe für Standard-Stationen
+     * @param {d3.Selection} labelsGroup - Gruppe für Labels
+     * @param {Array} visibleLines - Aktive zu rendernde Linien
+     * @param {Map} zoneColors - Map der Zonen-Hintergrundfarben
+     * @param {Map} allStations - Map aller Stationsdaten
+     * @param {Function} addBox - Registriert eine Bounding-Box
+     * @param {Function} checkCollision - Prüft, ob sich eine Box mit bestehenden Elementen überlappt
      */
     renderStations(transferBgGroup, transferFgGroup, normalStationsGroup, labelsGroup, visibleLines, zoneColors, allStations, addBox, checkCollision) {
         visibleLines.forEach(line => {

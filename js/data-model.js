@@ -1,7 +1,7 @@
 import { parseDate } from './utils.js';
 
 /**
- * Handles fetching, validation, and normalization of Metro map data.
+ * Kümmert sich um das Abrufen, die Validierung und Normalisierung von Metro-Map-Daten.
  */
 export class DataModel {
     constructor() {}
@@ -16,9 +16,9 @@ export class DataModel {
     }
 
     /**
-     * Validates raw JSON data and normalizes dates into sortable Date objects.
-     * @param {Object} data - The raw JSON configuration for the metro map.
-     * @returns {Object} A normalized data object with parsed dates and sorted arrays.
+     * Validiert rohe JSON-Daten und normalisiert Datumsangaben in sortierbare Date-Objekte.
+     * @param {Object} data - Die rohe JSON-Konfiguration für die Metro-Map.
+     * @returns {Object} Ein normalisiertes Datenobjekt mit geparsten Datumsangaben und sortierten Arrays.
      */
     validateAndNormalize(data) {
         // Minimal validation
