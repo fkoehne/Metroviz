@@ -1,6 +1,6 @@
 /**
- * Berechnet die X- und Y-Koordinaten von Zonen, Linien und Stationen 
- * basierend auf deren zeitlichen (Datum) und räumlichen (Zone/Transfer) Beziehungen.
+ * Responsible for calculating the X and Y coordinates of zones, lines, and stations 
+ * based on their temporal (date) and spatial (zone/transfer) relationships.
  */
 export class LayoutEngine {
     constructor() {
@@ -14,9 +14,9 @@ export class LayoutEngine {
     }
 
     /**
-     * Berechnet das vollständige Layout, das für den Metro-Renderer benötigt wird.
-     * @param {Object} data - Die normalisierte Timeline, Events, Zonen und Linien.
-     * @returns {Object} Layout-Konfiguration mit berechneten Skalen, Zonen, Linien und Stations-Koordinaten.
+     * Calculates the full layout required for the Metro renderer.
+     * @param {Object} data - The normalized timeline, events, zones, and lines.
+     * @returns {Object} Layout configuration containing computed scales, zones, lines, and station coordinates.
      */
     calculate(data) {
         const { width, margins } = this.config;

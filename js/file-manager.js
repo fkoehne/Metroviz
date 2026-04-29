@@ -2,7 +2,7 @@ import { downloadBlob, sanitizeSvg, sanitizeFilename } from './utils.js';
 
 export const fileManagerActions = {
 /**
-     * Lädt den Index gespeicherter Dateien aus dem localStorage.
+     * Loads the index of saved files from localStorage.
      */
     loadIndex() {
         try {
@@ -14,7 +14,7 @@ export const fileManagerActions = {
     },
 
 /**
-     * Speichert den aktuellen Datei-Index im localStorage.
+     * Saves the current index of files to localStorage.
      */
     saveIndex() {
         try {
@@ -25,8 +25,8 @@ export const fileManagerActions = {
     },
 
 /**
-     * Lädt eine spezifische Datei anhand ihres Namens aus dem localStorage.
-     * @param {string} name - Der Name der zu ladenden Datei.
+     * Loads a specific file by name from localStorage.
+     * @param {string} name - The name of the file to load.
      */
     async loadFile(name) {
         if (!name) return;
@@ -43,8 +43,8 @@ export const fileManagerActions = {
     },
 
 /**
-     * Speichert die aktuellen Daten im localStorage unter dem aktuellen Dateinamen.
-     * Fordert zur Eingabe eines neuen Namens auf, falls derzeit keine Datei ausgewählt ist.
+     * Saves the current data to localStorage under the current file name.
+     * Prompts for a new name if no file is currently selected.
      */
     async saveFile() {
         if (!this.currentFileName) {
@@ -61,7 +61,7 @@ export const fileManagerActions = {
     },
 
 /**
-     * Fordert den Benutzer zur Eingabe eines neuen Namens auf und speichert die aktuellen Daten als neue Datei.
+     * Prompts the user for a new name and saves the current data as a new file.
      */
     async saveAsNew() {
         const name = await this.dialogPrompt(
@@ -87,7 +87,7 @@ export const fileManagerActions = {
     },
 
 /**
-     * Erstellt eine neue, leere Roadmap mit Standard-Daten.
+     * Creates a new, empty roadmap with default data.
      */
     createNew() {
         const year = new Date().getFullYear();
@@ -105,9 +105,9 @@ export const fileManagerActions = {
     },
 
 /**
-     * Verarbeitet den Import von JSON-Daten aus einer ausgewählten oder per Drag-and-Drop abgelegten Datei.
-     * Beinhaltet ein 5MB-Größenlimit als Sicherheitsprüfung.
-     * @param {File} file - Das zu lesende Datei-Objekt.
+     * Handles importing JSON data from a selected or dropped file.
+     * Includes a 5MB size limit security check.
+     * @param {File} file - The file object to read.
      */
     importJsonFromFile(file) {
         if (!file) return;
@@ -134,8 +134,8 @@ export const fileManagerActions = {
     },
 
 /**
-     * Verarbeitet das Dateieingabe-Änderungsereignis für den Import.
-     * @param {Event} event - Das DOM-Änderungsereignis.
+     * Handles the file input change event for importing.
+     * @param {Event} event - The DOM change event.
      */
     handleImportFileInput(event) {
         const file = event.target.files[0];
@@ -144,8 +144,8 @@ export const fileManagerActions = {
     },
 
 /**
-     * Verarbeitet das Drag-and-Drop-Ereignis für den Import von JSON-Dateien.
-     * @param {DragEvent} event - Das DOM-Drop-Ereignis.
+     * Handles the drag-and-drop event for importing JSON files.
+     * @param {DragEvent} event - The DOM drop event.
      */
     importDropHandler(event) {
         event.preventDefault();
@@ -155,7 +155,7 @@ export const fileManagerActions = {
     },
 
 /**
-     * Löst einen Import von der angegebenen URL aus.
+     * Triggers an import from the provided URL.
      */
     async importFromUrl() {
         const url = this.importUrl.trim();
@@ -168,7 +168,7 @@ export const fileManagerActions = {
     },
 
 /**
-     * Lädt den Standard-Beispieldatensatz (data/example.json).
+     * Loads the default example dataset (data/example.json).
      */
     async loadInitialData() {
         try {
@@ -182,10 +182,10 @@ export const fileManagerActions = {
     },
 
 /**
-     * Versucht, JSON-Daten von einer Remote-URL zu laden.
-     * Verhindert XSS, prüft Protokoll, Timeouts und erzwingt Größenbeschränkungen.
-     * @param {string} url - Die abzurufende externe JSON-URL.
-     * @returns {boolean} True, wenn das Laden erfolgreich war, andernfalls false.
+     * Attempts to load JSON data from a remote URL.
+     * Prevents XSS, checks protocol, timeouts, and enforces size limits.
+     * @param {string} url - The external JSON URL to fetch.
+     * @returns {boolean} True if loading succeeded, false otherwise.
      */
     async loadFromRemoteSource(url) {
         this.jsonError = '';
@@ -233,9 +233,9 @@ export const fileManagerActions = {
     },
 
     /**
-     * Serialisiert das aktuelle SVG-Element in eine Data-URL.
+     * Serializes the current SVG element into a data URL.
      * 
-     * @returns {string|null} Die Data-URL des SVG, oder null, falls es fehlschlägt.
+     * @returns {string|null} The data URL of the SVG, or null if it fails.
      */
     _getSvgDataUrl() {
         const svgElement = window.app.renderer.svgElement;
@@ -267,7 +267,7 @@ export const fileManagerActions = {
     },
 
     /**
-     * Exportiert die aktuelle Roadmap-Ansicht als SVG-Datei.
+     * Exports the current roadmap view as an SVG file.
      */
     exportSVG() {
         const svgUrl = this._getSvgDataUrl();
@@ -283,7 +283,7 @@ export const fileManagerActions = {
     },
 
     /**
-     * Exportiert die aktuelle Roadmap-Ansicht als hochauflösende PNG-Datei.
+     * Exports the current roadmap view as a high-resolution PNG file.
      */
     exportPNG() {
         const svgUrl = this._getSvgDataUrl();
@@ -315,8 +315,8 @@ export const fileManagerActions = {
     },
 
     /**
-     * Exportiert die aktuelle Roadmap-Ansicht als PDF-Datei.
-     * Erfordert, dass die Bibliotheken jsPDF und svg2pdf global geladen sind.
+     * Exports the current roadmap view as a PDF file.
+     * Requires jsPDF and svg2pdf libraries to be loaded globally.
      */
     async exportPDF() {
         const svgElement = window.app.renderer.svgElement;
@@ -353,7 +353,7 @@ export const fileManagerActions = {
     },
 
 /**
-     * Exportiert die rohe JSON-Repräsentation des aktuellen Roadmap-Zustands.
+     * Exports the raw JSON representation of the current roadmap state.
      */
     exportJSON() {
         if (!this.rawJson) return;

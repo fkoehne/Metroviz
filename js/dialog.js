@@ -1,11 +1,11 @@
 /**
- * Stellt Dialog-Management-Aktionen für Alert-, Confirm- und Prompt-Modale bereit.
- * Verlässt sich auf einen geteilten Zustand (`dialogOpen`, `dialogMode`, `_dialogResolve`, etc.),
- * um asynchrone Dialog-Abläufe mittels Promises zu verarbeiten.
+ * Provides dialog management actions for alert, confirm, and prompt modals.
+ * Relies on a shared state (`dialogOpen`, `dialogMode`, `_dialogResolve`, etc.)
+ * to handle asynchronous dialog flows using Promises.
  */
 export const dialogActions = {
     /**
-     * Behandelt den Druck auf die Escape-Taste, um das oberste offene Modal zu schließen.
+     * Handles the Escape key press to dismiss the topmost open modal.
      */
     onEscapeModal() {
         if (this.dialogOpen) this.dialogDismiss();
@@ -13,7 +13,7 @@ export const dialogActions = {
     },
 
     /**
-     * Bestätigt den aktuellen Dialog und löst das ausstehende Promise mit dem entsprechenden positiven Wert auf.
+     * Confirms the current dialog, resolving the pending promise with the corresponding positive value.
      */
     dialogConfirmOk() {
         // Cache and clear the resolver to prevent multiple invocations
@@ -30,7 +30,7 @@ export const dialogActions = {
     },
 
     /**
-     * Schließt den aktuellen Dialog ab und löst das ausstehende Promise mit einem Standard-/Negativwert auf.
+     * Dismisses the current dialog, resolving the pending promise with a default/negative value.
      */
     dialogDismiss() {
         // Cache and clear the resolver to prevent multiple invocations
@@ -47,11 +47,11 @@ export const dialogActions = {
     },
 
     /**
-     * Zeigt einen Warn-Dialog (Alert) an.
+     * Displays an alert dialog.
      * 
-     * @param {string} message - Die anzuzeigende Nachricht.
-     * @param {string} [title='Hinweis'] - Der Dialog-Titel.
-     * @returns {Promise<void>} Wird aufgelöst, wenn der Dialog geschlossen oder bestätigt wird.
+     * @param {string} message - The message to display.
+     * @param {string} [title='Hinweis'] - The dialog title.
+     * @returns {Promise<void>} Resolves when the dialog is dismissed or confirmed.
      */
     dialogAlert(message, title = 'Hinweis') {
         return new Promise((resolve) => {
@@ -65,11 +65,11 @@ export const dialogActions = {
     },
 
     /**
-     * Zeigt einen Bestätigungs-Dialog (Confirm) an.
+     * Displays a confirmation dialog.
      * 
-     * @param {string} message - Die anzuzeigende Nachricht.
-     * @param {string} [title='Bestätigen'] - Der Dialog-Titel.
-     * @returns {Promise<boolean>} Wird mit true aufgelöst, wenn bestätigt, ansonsten mit false.
+     * @param {string} message - The message to display.
+     * @param {string} [title='Bestätigen'] - The dialog title.
+     * @returns {Promise<boolean>} Resolves to true if confirmed, false if dismissed.
      */
     dialogConfirm(message, title = 'Bestätigen') {
         return new Promise((resolve) => {
@@ -83,12 +83,12 @@ export const dialogActions = {
     },
 
     /**
-     * Zeigt einen Eingabe-Dialog (Prompt) an.
+     * Displays a prompt dialog for user input.
      * 
-     * @param {string} message - Die anzuzeigende Nachricht.
-     * @param {string} [defaultValue=''] - Der Initialwert für das Eingabefeld.
-     * @param {string} [title='Eingabe'] - Der Dialog-Titel.
-     * @returns {Promise<string|null>} Wird mit dem eingegebenen String aufgelöst oder mit null, wenn abgebrochen.
+     * @param {string} message - The message to display.
+     * @param {string} [defaultValue=''] - The initial value for the input field.
+     * @param {string} [title='Eingabe'] - The dialog title.
+     * @returns {Promise<string|null>} Resolves to the input string if confirmed, or null if dismissed.
      */
     dialogPrompt(message, defaultValue = '', title = 'Eingabe') {
         return new Promise((resolve) => {

@@ -1,24 +1,24 @@
 import { parseDate } from './utils.js';
 
 export const editorActions = {
-    // Intent: Array-Mutationen (wie .push() und .splice()) werden in diesem Objekt extensiv genutzt.
-    // Dies tun wir, um das Reaktivitätssystem des zugrunde liegenden UI-Frameworks (z. B. Alpine.js) auszulösen,
-    // welches direkte Array-Änderungen überwacht, um die Ansicht zu aktualisieren, anstatt sich auf Immutabilität zu verlassen.
+    // Intent: Array mutations (like .push() and .splice()) are used extensively in this object.
+    // We do this to trigger the reactivity system of the underlying UI framework (e.g., Alpine.js),
+    // which observes direct array modifications to update the view, rather than relying on immutability.
 
     /**
-     * Generiert einen zufälligen alphanumerischen ID-String.
-     * @param {string} prefix - Das Präfix für die generierte ID.
-     * @returns {string} Die zufällige ID mit Präfix.
+     * Generates a random alphanumeric ID string.
+     * @param {string} prefix - The prefix for the generated ID.
+     * @returns {string} The prefixed random ID.
      */
     generateId(prefix) {
         return prefix + '-' + Math.random().toString(36).substr(2, 6);
     },
 
     /**
-     * Vergleicht zwei HEX-Farbstrings sicher.
-     * @param {string} a - Erste Farbe.
-     * @param {string} b - Zweite Farbe.
-     * @returns {boolean} True, wenn die Farben übereinstimmen.
+     * Compares two HEX color strings safely.
+     * @param {string} a - First color.
+     * @param {string} b - Second color.
+     * @returns {boolean} True if the colors match.
      */
     paletteColorsEqual(a, b) {
         if (a == null || b == null) return false;
@@ -26,19 +26,19 @@ export const editorActions = {
     },
 
     /**
-     * Prüft, ob eine benutzerdefinierte HEX-Farbe in der vordefinierten Metro-Palette existiert.
-     * @param {string} hex - Die zu prüfende Farbe.
-     * @returns {boolean} True, wenn die Farbe Teil der Palette ist.
+     * Checks if a custom HEX color exists in the predefined metro palette.
+     * @param {string} hex - The color to check.
+     * @returns {boolean} True if the color is part of the palette.
      */
     colorInMetroPalette(hex) {
         return this.metroPalette.some((c) => this.paletteColorsEqual(c, hex));
     },
 
     /**
-     * Stellt sicher, dass ein Editor-Element sichtbar ist, indem zum Visual-Tab gewechselt wird,
-     * die übergeordnete Linie/Zone aufgeklappt und weich dorthin gescrollt wird.
+     * Ensures an editor item is visible by switching to the visual tab,
+     * expanding its parent line/zone, and smoothly scrolling it into view.
      * 
-     * @param {string} domId - Die DOM-ID des Elements, zu dem gescrollt werden soll.
+     * @param {string} domId - The DOM ID of the item to scroll to.
      */
     scrollVisualEditorItemToView(domId) {
         this.activeTab = 'visual';
@@ -61,7 +61,7 @@ export const editorActions = {
     },
 
     /**
-     * Fügt ein neues globales Event/eine Deadline zum Datenmodell hinzu.
+     * Appends a new global event/deadline to the data model.
      */
     addEvent() {
         if (!this.data.events) this.data.events = [];
@@ -75,8 +75,8 @@ export const editorActions = {
     },
 
     /**
-     * Entfernt ein Event an einem bestimmten Index.
-     * @param {number} index - Event-Array-Index.
+     * Removes an event at a specified index.
+     * @param {number} index - Event array index.
      */
     removeEvent(index) {
         // Direct mutation (splice) is intentional here so the reactivity system 
@@ -98,20 +98,24 @@ export const editorActions = {
     },
 
     /**
-     * Entfernt eine Zone aus dem Datenmodell und weist deren Linien einer benachbarten Zone zu.
-     * Linien der gelöschten Zone werden in die vorherige Zone verschoben, falls vorhanden,
-     * ansonsten in die nachfolgende Zone. Gibt es keine weitere Zone, bleibt die Zonenzuordnung leer.
-     * @param {number} index - Zone-Array-Index.
+     * Removes a zone from the data model and reassigns its lines to an adjacent zone.
+     * Lines belonging to the deleted zone are moved to the nearest remaining zone
+     * (the one before if possible, otherwise the one after). If no other zones remain,
+     * the lines' zone field is cleared.
+     * @param {number} index - Zone array index.
      */
     removeZone(index) {
         const removedZoneId = this.data.zones[index].id;
 
+        // Determine which zone to reassign orphaned lines to
         let replacementZoneId = '';
         if (this.data.zones.length > 1) {
+            // Prefer the zone before; fall back to the zone after
             const replacementIndex = index > 0 ? index - 1 : index + 1;
             replacementZoneId = this.data.zones[replacementIndex].id;
         }
 
+        // Reassign all lines that belonged to the removed zone
         this.data.lines.forEach(line => {
             if (line.zone === removedZoneId) {
                 line.zone = replacementZoneId;
@@ -162,8 +166,8 @@ export const editorActions = {
     },
 
     /**
-     * Entfernt eine Linie aus dem Datenmodell und bereinigt Verweise auf deren Stationen.
-     * @param {number} index - Linien-Array-Index.
+     * Removes a line from the data model and clears references to its stations.
+     * @param {number} index - Line array index.
      */
     removeLine(index) {
         const line = this.data.lines[index];
@@ -312,11 +316,11 @@ export const editorActions = {
     },
 
     /**
-     * Sortiert Events und Stationen chronologisch und bereinigt fehlerhafte Referenzen.
+     * Sorts events and stations chronologically, and cleans up broken references.
      * 
-     * Intent: Über die Zeit können Benutzer Stationen oder Linien löschen, die von anderen Stationen referenziert werden 
-     * (z. B. Transfers oder Abhängigkeiten). Diese Funktion stellt die referenzielle Integrität sicher, 
-     * indem sie "hängende" Zeiger auf nicht existierende IDs entfernt.
+     * Intent: Over time, users may delete stations or lines that are referenced 
+     * by other stations (e.g., transfers or dependencies). This function ensures 
+     * referential integrity by removing any "dangling" pointers to non-existent IDs.
      */
     resortAndClean() {
         // Sort events chronologically
@@ -384,9 +388,9 @@ export const editorActions = {
     },
 
     /**
-     * Fokussiert auf eine spezifische Station, indem deren Zone/Linie aufgeklappt und hervorgehoben wird.
+     * Focuses on a specific station by expanding its zone/line and highlighting it.
      * 
-     * @param {string} stationId - Die ID der zu fokussierenden Station.
+     * @param {string} stationId - The ID of the station to focus.
      */
     focusStation(stationId) {
         this.editorVisible = true;
@@ -430,10 +434,10 @@ export const editorActions = {
     },
 
     /**
-     * Sammelt alle Stationen der gesamten Map, überspringt diejenige, die ausgeschlossen werden soll.
-     * Nützlich zum Aufbauen von Dropdowns für Transfers oder Beziehungen.
-     * @param {string} excludeId - ID der Station, die in den Ergebnissen weggelassen werden soll.
-     * @returns {Array} Liste von Stationsobjekten mit kurzen Label-Infos.
+     * Collects all stations across the entire map, skipping the one to exclude.
+     * Useful for building dropdowns for transfers or relationships.
+     * @param {string} excludeId - ID of the station to omit from the results.
+     * @returns {Array} List of station objects with brief label info.
      */
     getAllStations(excludeId) {
         const all = [];
@@ -452,9 +456,9 @@ export const editorActions = {
     },
 
     /**
-     * Findet und liefert ein Stationsobjekt über dessen eindeutige ID aus der gesamten Map.
-     * @param {string} id - Die eindeutige ID der zu lokalisierenden Station.
-     * @returns {Object|null} Das Stationsobjekt oder null, falls nicht gefunden.
+     * Finds and returns a station object by its unique ID across the entire map.
+     * @param {string} id - The unique ID of the station to locate.
+     * @returns {Object|null} The station object, or null if not found.
      */
     getStationById(id) {
         for (const line of this.data.lines) {
@@ -467,9 +471,9 @@ export const editorActions = {
     },
 
     /**
-     * Behandelt Typ-Änderungen im Stations-Editor.
-     * Wenn eine Station von Transfer/Ende zu etwas anderem wechselt, werden vorher verknüpfte Transfer-Ziele entkoppelt.
-     * @param {Object} station - Die Station, die geändert wird.
+     * Handles type changes in the station editor.
+     * If a station changes from transfer/terminus to something else, it unlinks previously connected transfer targets.
+     * @param {Object} station - The station being modified.
      */
     handleTypeChange(station) {
         if (!['transfer', 'terminus'].includes(station.type)) {
@@ -489,9 +493,9 @@ export const editorActions = {
     },
 
     /**
-     * Verwaltet bidirektionale Verbindungen für Transfer-Stationen.
-     * Wenn Station A mit B verbindet, wird B automatisch wieder mit A verbunden und die Typen werden aktualisiert.
-     * @param {Object} station - Die Station, deren Transferziel geändert wurde.
+     * Manages bi-directional connections for transfer stations.
+     * When station A connects to B, this automatically connects B back to A and updates types.
+     * @param {Object} station - The station whose transfer target was changed.
      */
     handleTransferChange(station) {
         if (!station.transferTo) {

@@ -1,8 +1,8 @@
 /**
- * Berechnet eine Bitmaske, die den eingeklappten Zustand von bis zu 31 Zonen repräsentiert.
+ * Calculates a bitmask representing the collapsed state of up to 31 zones.
  * 
- * @param {Array} zones - Array von Zonen-Objekten.
- * @returns {number} Eine Bitmasken-Ganzzahl.
+ * @param {Array} zones - Array of zone objects.
+ * @returns {number} A bitmask integer.
  */
 export function getZStateBitmask(zones) {
     let zstate = 0;
@@ -20,8 +20,8 @@ export function getZStateBitmask(zones) {
 
 export const urlStateActions = {
     /**
-     * Parst URL-Query-Parameter und aktualisiert den Anwendungszustand entsprechend.
-     * Behandelt Parameter wie 'editor', 'view', 'file', 'zstate' und 'data'.
+     * Parses URL query parameters and updates the application state accordingly.
+     * Handles parameters like 'editor', 'view', 'file', 'zstate', and 'data'.
      */
     parseUrlParams() {
         const params = new URLSearchParams(window.location.search);
@@ -67,8 +67,8 @@ export const urlStateActions = {
     },
 
     /**
-     * Aktualisiert die URL-Query-Parameter des Browsers, um den aktuellen Anwendungszustand widerzuspiegeln.
-     * Ersetzt den History-Status ohne die Seite neu zu laden.
+     * Updates the browser's URL query parameters to reflect the current application state.
+     * Replaces the history state without reloading the page.
      */
     updateUrlParams() {
         const url = new URL(window.location);
@@ -95,8 +95,8 @@ export const urlStateActions = {
     },
 
     /**
-     * Generiert eine komprimierte, teilbare URL, die die aktuellen JSON-Daten und Zonen-Zustände enthält,
-     * und kopiert diese dann in die Zwischenablage des Benutzers.
+     * Generates a compressed shareable URL containing the current JSON data and zone states,
+     * then copies it to the user's clipboard.
      */
     async generateShareLink() {
         if (typeof window.LZString === 'undefined') {
