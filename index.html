@@ -237,7 +237,7 @@
                         <button class="btn-small" @click="addZone()" x-text="$store.i18n.t('editor.addZone')">+ Zone</button>
                     </div>
                     <div class="editor-section">
-                        <template x-for="(zone, index) in data.zones" :key="zone.id || index">
+                        <template x-for="(zone, index) in data.zones" :key="getObjKey(zone)">
                             <div class="card" :id="'editor-zone-' + (zone.id || index)" x-data="{ collapsed: true }" @expand-zone="collapsed = false">
                                 <!-- Clickable Header -->
                                 <div class="zone-header-row" @click="collapsed = !collapsed">
