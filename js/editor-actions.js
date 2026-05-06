@@ -166,10 +166,30 @@ export const editorActions = {
     },
 
     /**
-     * Removes a line from the data model.
+     * Removes a line from the data model and clears references to its stations.
      * @param {number} index - Line array index.
      */
     removeLine(index) {
+        const line = this.data.lines[index];
+        const removedStationIds = new Set((line.stations || []).map(station => station.id));
+
+        this.data.lines.forEach((otherLine, lineIndex) => {
+            if (lineIndex === index) return;
+            (otherLine.stations || []).forEach(station => {
+                if (removedStationIds.has(station.transferTo)) {
+                    delete station.transferTo;
+                    if (station.type === 'transfer') station.type = 'milestone';
+                }
+                if (removedStationIds.has(station.transferFrom)) {
+                    delete station.transferFrom;
+                }
+                if (Array.isArray(station.relations)) {
+                    station.relations = station.relations.filter(rel => !removedStationIds.has(rel?.target));
+                    if (station.relations.length === 0) delete station.relations;
+                }
+            });
+        });
+
         this.data.lines.splice(index, 1);
     },
 

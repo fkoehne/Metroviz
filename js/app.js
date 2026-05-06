@@ -66,6 +66,9 @@ class App {
      */
     initAlpine() {
         document.addEventListener('alpine:init', () => {
+            const objKeys = new WeakMap();
+            let nextObjKey = 1;
+
             Alpine.data('metrovizApp', () => ({
                 editorVisible: false,
                 globalView: 'map',
@@ -100,6 +103,16 @@ class App {
                 ...fileManagerActions,
                 ...markdownExportActions,
                 ...editorActions,
+
+                /**
+                 * Returns a stable render key for mutable editor objects.
+                 * This keeps Alpine from recreating DOM nodes when editable IDs change.
+                 */
+                getObjKey(obj) {
+                    if (!obj || typeof obj !== 'object') return String(obj);
+                    if (!objKeys.has(obj)) objKeys.set(obj, `obj-${nextObjKey++}`);
+                    return objKeys.get(obj);
+                },
 
                 async init() {
                     await i18nPromise;
